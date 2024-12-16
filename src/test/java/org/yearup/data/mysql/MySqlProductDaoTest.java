@@ -149,7 +149,7 @@ class MySqlProductDaoTest extends BaseDaoTestClass
     @Test
     public void getByID_test(){
         // Arrange: Define the expected product
-        int productId = 1; // Assuming productId 1 exists in the database
+        int productId = 1;
         Product expectedProduct = new Product(
                 1,
                 "Smartphone",
@@ -193,8 +193,7 @@ class MySqlProductDaoTest extends BaseDaoTestClass
         Product productFromDb = dao.getById(p.getProductId());
 
 
-        //assert
-        // Assert: Verify that the created product matches the expected product
+        // assert: Verify that the created product matches the expected product
         assertNotNull(p, "The created product should not be null");
         assertEquals(newProduct.getName(), p.getName(), "The name should match");
         assertEquals(newProduct.getPrice(), p.getPrice(), "The price should match");
@@ -208,8 +207,8 @@ class MySqlProductDaoTest extends BaseDaoTestClass
 
     @Test
     public void test_updateProduct() {
-        // Arrange: Create a new product
-        int productId = 1;  // Assuming we have a product with ID 1 in the database
+        // arrange: Create a new product
+        int productId = 1;
         Product initialProduct = new Product(
                 productId,
                 "Old Smartphone",
@@ -222,7 +221,7 @@ class MySqlProductDaoTest extends BaseDaoTestClass
                 "old_smartphone.jpg"
         );
 
-        // Insert the initial product into the database (you could use your existing create method)
+        // insert the initial product into the database (you could use your existing create method)
         dao.create(initialProduct);
 
         // New product data for update

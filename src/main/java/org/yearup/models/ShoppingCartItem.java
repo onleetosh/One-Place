@@ -11,6 +11,11 @@ public class ShoppingCartItem
     private BigDecimal discountPercent = BigDecimal.ZERO;
 
 
+    public ShoppingCartItem(Product product, int quantity, BigDecimal discountPercent) {
+        this.product = product;
+        this.quantity = quantity;
+        this.discountPercent = discountPercent != null ? discountPercent : BigDecimal.ZERO;  // Default discount is 0 if null.
+    }
     public Product getProduct()
     {
         return product;

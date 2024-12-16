@@ -105,7 +105,7 @@ public class CategoriesController
 
         try
         {
-            return categoryDao.create(category);
+            return categoryDao.createCategory(category);
         }
         catch(Exception ex)
         {

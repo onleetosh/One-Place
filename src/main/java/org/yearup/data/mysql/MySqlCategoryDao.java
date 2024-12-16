@@ -24,10 +24,9 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     public List<Category> getAllCategories()
     {
         List<Category> category = new ArrayList<>();
-        String sql = "SELECT * FROM Categories";
 
         try (Connection connection = getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql);
+             PreparedStatement stmt = connection.prepareStatement(Queries.selectCategories());
              ResultSet results = stmt.executeQuery()) {
 
             while (results.next()) {
@@ -50,11 +49,9 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     @Override
     public Category getById(int categoryId)
     {
-        String sql = "SELECT * FROM categories WHERE category_id = ?";
-
         try(Connection connection = getConnection();
             PreparedStatement stmt = connection.prepareStatement(
-                    sql))
+                    Queries.selectCategoriesById()))
         {
             // Set the ID parameter for the query
             stmt.setInt(1, categoryId);
@@ -78,16 +75,15 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     @Override
     public Category getByName(String name) {
 
-        String sql = "SELECT * FROM categories WHERE name = ?";
 
         try(Connection connection = getConnection();
-            PreparedStatement query = connection.prepareStatement(
-                    sql))
+            PreparedStatement stmt = connection.prepareStatement(
+                    Queries.selectCategoriesByName()))
         {
             // Set the ID parameter for the query
-            query.setString(1, name);
+            stmt.setString(1, name);
             // Execute the query and process the results
-            try( ResultSet results = query.executeQuery()){
+            try( ResultSet results = stmt.executeQuery()){
                 while (results.next()){
                     return new Category(
                             results.getInt(1),
@@ -104,17 +100,11 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     }
 
     @Override
-    public Category create(Category category)
+    public Category createCategory(Category category)
     {
 
-        String sql = """
-            INSERT INTO 
-                categories (name, description)
-            VALUES 
-                (?, ?)
-            """;
         try (Connection connection = getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = connection.prepareStatement(Queries.insertCategories(), PreparedStatement.RETURN_GENERATED_KEYS)) {
 
             // Set the parameter for the query
             stmt.setString(1, category.getName());
@@ -147,14 +137,9 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     @Override
     public void update(int categoryId, Category category)
     {
-        String sql = """
-                     UPDATE categories
-                     SET name = ?, description = ?
-                     WHERE category_id = ?
-                      """;
 
         try (Connection connection = getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
+             PreparedStatement stmt = connection.prepareStatement(Queries.updateCategories())) {
 
             // Set the parameter for the query
             stmt.setString(1, category.getName());
@@ -175,11 +160,9 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     @Override
     public void delete(int categoryId)
     {
-        String sql = """
-                DELETE FROM categories WHERE category_Id = ?
-                """;
+
         try (Connection connection = getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
+             PreparedStatement stmt = connection.prepareStatement(Queries.dropCategories())) {
 
             // Set the parameters for the query
             stmt.setInt(1, categoryId);
