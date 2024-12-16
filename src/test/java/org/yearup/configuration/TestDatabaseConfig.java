@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
@@ -21,6 +22,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 @Configuration
+//Add @PropertySource to the Configuration Class: Explicitly tell Spring where to find the properties file:
+@PropertySource("classpath:application.properties")
 public class TestDatabaseConfig
 {
     private final String serverUrl;
@@ -76,6 +79,14 @@ public class TestDatabaseConfig
         dataSource.setPassword(password);
         dataSource.setAutoCommit(false);
         dataSource.setSuppressClose(true);
+
+
+//        try (Connection conn = dataSource.getConnection()) {
+//            ScriptRunner runner = new ScriptRunner(conn);
+//            runner.runScript(new InputStreamReader(new ClassPathResource("test-data.sql").getInputStream()));
+//            conn.commit();
+//        }
+
 
         ScriptRunner runner = new ScriptRunner(dataSource.getConnection());
         Reader reader = new BufferedReader(new FileReader((new ClassPathResource("test-data.sql")).getFile().getAbsolutePath()));

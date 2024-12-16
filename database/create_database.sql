@@ -65,7 +65,7 @@ CREATE TABLE orders (
     city VARCHAR(50) NOT NULL,
     state VARCHAR(50) NOT NULL,
     zip VARCHAR(20) NOT NULL,
-    shipping_amount DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    total DECIMAL(10, 2) NOT NULL DEFAULT 0,
     PRIMARY KEY (order_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
@@ -115,7 +115,7 @@ VALUES  ('Electronics', 'Explore the latest gadgets and electronic devices.'),
 -- electronics
 INSERT INTO products (name, price, category_id, description, image_url, stock, featured, color) 
 VALUES  ('Smartphone', 499.99, 1, 'A powerful and feature-rich smartphone for all your communication needs.', 'smartphone.jpg', 50, 0, 'Black'),
-        ('Laptop', 899.99, 1, 'A high-performance laptop for work and entertainment.', 'laptop.jpg', 30, 0, 'Gray'),
+        ('Macbook Air', 899.99, 1, 'A high-performance laptop for work and entertainment.', 'laptop.jpg', 30, 0, 'Gray'),
         ('Headphones', 99.99, 1, 'Immerse yourself in music with these high-quality headphones.', 'headphones.jpg', 100, 1, 'White'),
         ('Smart TV', 1499.99, 1, 'Experience stunning visuals and smart features with this advanced television.', 'smart-tv.jpg', 20, 0, 'Black'),
         ('Digital Camera', 599.99, 1, 'Capture life''s precious moments with this professional-grade digital camera.', 'camera.jpg', 15, 1, 'Silver'),
@@ -210,8 +210,8 @@ VALUES  ('Cookware Set', 149.99, 3, 'A comprehensive set of high-quality cookwar
 
 -- sample duplicates from "bug"
 INSERT INTO products (name, price, category_id, description, image_url, stock, featured, color)
-VALUES  ('Laptop', 999.99, 1, 'A high-performance laptop for work and entertainment.', 'laptop.jpg', 30, 0, 'Gray'),
-        ('Laptop', 999.99, 1, 'A high-performance gaming laptop.', 'laptop.jpg', 30, 0, 'Gray'),
+VALUES  ('Macbook Pro', 999.99, 1, 'A high-performance laptop for heavy workload, video edit, and entertainment.', 'laptop.jpg', 30, 0, 'Gray'),
+        ('Gaming Laptop ', 999.99, 1, 'A high-performance gaming laptop.', 'laptop.jpg', 30, 0, 'Gray'),
         ('Tea Kettle', 29.99, 3, 'Brew a perfect cup of tea with this classic tea kettle.', 'tea-kettle.jpg', 50, 1, 'White');
 
 -- add shopping cart items
