@@ -1,5 +1,6 @@
 package org.yearup.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +28,14 @@ public class ShoppingCartController
     private ProductDao productDao;
 
 
+    @Autowired
+    public ShoppingCartController(ShoppingCartDao shoppingCartDao,
+                                  UserDao userDao,
+                                  ProductDao productDao) {
+        this.shoppingCartDao = shoppingCartDao;
+        this.userDao = userDao;
+        this.productDao = productDao;
+    }
     /**
      * Get the shopping cart for the currently logged-in user. (JSON pass)
      */
@@ -41,15 +50,17 @@ public class ShoppingCartController
 
             // find database user by userId
             // Find the user by username
+
+
             User user = userDao.getByUserName(userName);
             if (user == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
             }
+//No items found in the shopping cart for user ID: 7  (because my account is new)
             int userId = user.getId();
 
             ShoppingCart cart = shoppingCartDao.getByUserId(userId);
-
-            //debug statement
+//debug statement
             if (cart.getItems().isEmpty()) {
                 System.out.println("No items found in the shopping cart for user ID: " + userId);
             }
@@ -59,7 +70,7 @@ public class ShoppingCartController
         }
         catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error...");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
         }
     }
 
@@ -117,7 +128,7 @@ public class ShoppingCartController
      */
     // add a DELETE method to clear all products from the current users cart
     // https://localhost:8080/cart
-    @DeleteMapping("{id}")
+    @DeleteMapping()
     public void deleteCart(Principal principal){
         try {
             String userName = principal.getName();

@@ -1,5 +1,6 @@
 package org.yearup.data.mysql;
 
+import org.springframework.stereotype.Component;
 import org.yearup.data.ShoppingCartDao;
 import org.yearup.models.Product;
 import org.yearup.models.ShoppingCart;
@@ -12,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Component
 public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDao {
 
     public MySqlShoppingCartDao(DataSource dataSource) {
@@ -23,7 +25,7 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
         ShoppingCart shoppingCart = new ShoppingCart();
 
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(Queries.selectProductById())) {
+             PreparedStatement stmt = conn.prepareStatement(Queries.selectProductByUserId())) {
 
             // Set the userId in the query
             stmt.setInt(1, userId);
@@ -38,7 +40,7 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
                     String description = rs.getString("description");
                     String color = rs.getString("color");
                     int stock = rs.getInt("stock");
-                    boolean isFeatured = rs.getBoolean("is_featured");
+                    boolean isFeatured = rs.getBoolean("featured");
                     String imageUrl = rs.getString("image_url");
                     int quantity = rs.getInt("quantity");
 
@@ -79,6 +81,15 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
                         updateStmt.setInt(3, productId);
                         updateStmt.executeUpdate();
                     }
+                } else {
+                    // If the product is not in the cart, insert a new record
+                    String insertSql = "INSERT INTO shopping_cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
+                    try (PreparedStatement insertStmt = connection.prepareStatement(insertSql)) {
+                        insertStmt.setInt(1, userId);
+                        insertStmt.setInt(2, productId);
+                        insertStmt.setInt(3, 1);  // 1 is quantity default
+                        insertStmt.executeUpdate();
+                    }
                 }
             }
         } catch (SQLException e) {
@@ -114,4 +125,6 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
             throw new RuntimeException("Error clearing shopping cart", e);
         }
     }
+
+
 }

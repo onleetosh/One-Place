@@ -29,14 +29,6 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
 //                "   AND (price <= ? OR ? = -1) " +
 //                "   AND (color = ? OR ? = '') ";
 
-        String sql = """
-                SELECT * FROM products
-                WHERE (? IS NULL OR category_id = ?)
-                  AND (? IS NULL OR price >= ?)
-                  AND (? IS NULL OR price <= ?)
-                  AND (? IS NULL OR color = ?);
-                    """;
-
 
 
         //                 ** ERROR
@@ -55,7 +47,7 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
 
         try (Connection connection = getConnection())
         {
-            PreparedStatement stmt = connection.prepareStatement(sql);
+            PreparedStatement stmt = connection.prepareStatement(Queries.selectProductsByFilter());
 
             // Set the parameters
             stmt.setInt(1, categoryId); // for categoryId
@@ -87,11 +79,9 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
     {
         List<Product> products = new ArrayList<>();
 
-        String sql = "SELECT * FROM products WHERE category_id = ? ";
-
         try (Connection connection = getConnection())
         {
-            PreparedStatement stmt = connection.prepareStatement(sql);
+            PreparedStatement stmt = connection.prepareStatement(Queries.selectProductsByCatId());
             stmt.setInt(1, categoryId);
 
             ResultSet row = stmt.executeQuery();
@@ -114,10 +104,9 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
     @Override
     public Product getById(int productId)
     {
-        String sql = "SELECT * FROM products WHERE product_id = ?";
         try (Connection connection = getConnection())
         {
-            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement statement = connection.prepareStatement(Queries.selectProductByProdId());
             statement.setInt(1, productId);
 
             ResultSet row = statement.executeQuery();
@@ -138,14 +127,9 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
     public Product create(Product product)
     {
 
-        String sql = """
-                INSERT INTO products(name, price, category_id, description, color, image_url, stock, featured) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?);
-                """;
-
         try (Connection connection = getConnection())
         {
-            PreparedStatement stmt = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            PreparedStatement stmt = connection.prepareStatement(Queries.insertProduct(), PreparedStatement.RETURN_GENERATED_KEYS);
             stmt.setString(1, product.getName());
             stmt.setBigDecimal(2, product.getPrice());
             stmt.setInt(3, product.getCategoryId());
@@ -180,20 +164,10 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
     @Override
     public void update(int productId, Product product)
     {
-        String sql = "UPDATE products" +
-                " SET name = ? " +
-                "   , price = ? " +
-                "   , category_id = ? " +
-                "   , description = ? " +
-                "   , color = ? " +
-                "   , image_url = ? " +
-                "   , stock = ? " +
-                "   , featured = ? " +
-                " WHERE product_id = ?;";
 
         try (Connection connection = getConnection())
         {
-            PreparedStatement stmt = connection.prepareStatement(sql);
+            PreparedStatement stmt = connection.prepareStatement(Queries.updateProductByProdId());
             stmt.setString(1, product.getName());
             stmt.setBigDecimal(2, product.getPrice());
             stmt.setInt(3, product.getCategoryId());
@@ -215,13 +189,9 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
     @Override
     public void delete(int productId)
     {
-
-        String sql = "DELETE FROM products " +
-                " WHERE product_id = ?;";
-
         try (Connection connection = getConnection())
         {
-            PreparedStatement stmt = connection.prepareStatement(sql);
+            PreparedStatement stmt = connection.prepareStatement(Queries.dropProductById());
             stmt.setInt(1, productId);
 
             stmt.executeUpdate();

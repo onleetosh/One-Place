@@ -51,7 +51,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     {
         try(Connection connection = getConnection();
             PreparedStatement stmt = connection.prepareStatement(
-                    Queries.selectCategoriesById()))
+                    Queries.selectCategoriesByCatId()))
         {
             // Set the ID parameter for the query
             stmt.setInt(1, categoryId);
@@ -139,7 +139,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     {
 
         try (Connection connection = getConnection();
-             PreparedStatement stmt = connection.prepareStatement(Queries.updateCategories())) {
+             PreparedStatement stmt = connection.prepareStatement(Queries.updateCategoriesByCatId())) {
 
             // Set the parameter for the query
             stmt.setString(1, category.getName());
@@ -162,7 +162,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     {
 
         try (Connection connection = getConnection();
-             PreparedStatement stmt = connection.prepareStatement(Queries.dropCategories())) {
+             PreparedStatement stmt = connection.prepareStatement(Queries.dropCategoriesByCatId())) {
 
             // Set the parameters for the query
             stmt.setInt(1, categoryId);

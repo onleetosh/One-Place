@@ -11,6 +11,9 @@ public class ShoppingCartItem
     private BigDecimal discountPercent = BigDecimal.ZERO;
 
 
+    public ShoppingCartItem()
+    {
+    }
     public ShoppingCartItem(Product product, int quantity, BigDecimal discountPercent) {
         this.product = product;
         this.quantity = quantity;

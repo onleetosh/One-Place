@@ -59,6 +59,7 @@ public class CategoriesController
      */
     // add the appropriate annotation for a get action
     @GetMapping("{id}")
+    @PreAuthorize("permitAll()")
     public Category getById(@PathVariable int id)
     {
         // get the category by id
@@ -96,6 +97,8 @@ public class CategoriesController
      */
     // add annotation to call this method for a POST action
     // add annotation to ensure that only an ADMIN can call this function
+    @PostMapping
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Category addCategory(@RequestBody Category category)
     {
         // Check if the category already exists
@@ -158,7 +161,7 @@ public class CategoriesController
      */
     // add annotation to call this method for a DELETE action - the url path must include the categoryId
     // add annotation to ensure that only an ADMIN can call this function
-    @DeleteMapping({"id"})
+    @DeleteMapping({"/id"})
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void deleteCategory(@PathVariable int id)
     {

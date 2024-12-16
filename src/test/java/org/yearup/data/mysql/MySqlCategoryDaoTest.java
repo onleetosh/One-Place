@@ -67,7 +67,7 @@ public class MySqlCategoryDaoTest extends BaseDaoTestClass {
         newCategory.setDescription("Gear up for your outdoor adventures");
 
         // Act: Call the create method to insert the new category into the database
-        Category createdCategory = dao.create(newCategory);
+        Category createdCategory = dao.createCategory(newCategory);
 
         // Assert: Verify that the created category has a valid ID and matches the input values
         assertNotNull(createdCategory, "The created category should not be null.");
@@ -94,7 +94,7 @@ public class MySqlCategoryDaoTest extends BaseDaoTestClass {
         originalCategory.setDescription("A wide variety of books and literature.");
 
         // Insert the category to get a valid ID
-        Category insertedCategory = dao.create(originalCategory);
+        Category insertedCategory = dao.createCategory(originalCategory);
 
         // Modify the category for the update
         Category updatedCategory = new Category();
@@ -124,7 +124,7 @@ public class MySqlCategoryDaoTest extends BaseDaoTestClass {
         );
 
         // Create the product and retrieve the generated ID
-        Category testCategory = dao.create(category);
+        Category testCategory = dao.createCategory(category);
         int categoryIdToDelete = testCategory.getCategoryId();
 
         // Act: Delete the product
