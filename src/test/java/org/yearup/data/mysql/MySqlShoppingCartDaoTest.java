@@ -2,8 +2,8 @@ package org.yearup.data.mysql;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.yearup.models.ShoppingCart;
-import org.yearup.models.ShoppingCartItem;
+import org.yearup.models.cart.ShoppingCart;
+import org.yearup.models.cart.ShoppingCartItem;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,7 +42,7 @@ public class MySqlShoppingCartDaoTest extends BaseDaoTestClass {
         int productId = 1;
 
         // Act
-        dao.addToCart(userId, productId);  // Call the method
+        dao.doPost(userId, productId);  // Call the method
 
         // Assert
         ShoppingCart cart = dao.getByUserId(userId);  // Retrieve the shopping cart
@@ -64,8 +64,8 @@ public class MySqlShoppingCartDaoTest extends BaseDaoTestClass {
         int updatedQuantity = 5;
 
         // act
-        dao.addToCart(userId, productId);        // add the item to the cart
-        dao.updateCart(userId, productId, updatedQuantity); // call the method
+        dao.doPost(userId, productId);        // add the item to the cart
+        dao.doPut(userId, productId, updatedQuantity); // call the method
 
         // assert
         ShoppingCart cart = dao.getByUserId(userId); // retrieve the shopping cart
@@ -82,8 +82,8 @@ public class MySqlShoppingCartDaoTest extends BaseDaoTestClass {
         int productId = 1;
 
         // act
-        dao.addToCart(userId, productId); // add the item to the cart
-        dao.emptyCart(userId); // delete the item from the cart
+        dao.doPost(userId, productId); // add the item to the cart
+        dao.doDelete(userId); // delete the item from the cart
 
         // assert
         ShoppingCart cart = dao.getByUserId(userId); // retrieve the shopping cart

@@ -1,6 +1,7 @@
-package org.yearup.models;
+package org.yearup.models.cart;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.yearup.models.Product;
 
 import java.math.BigDecimal;
 
@@ -57,6 +58,7 @@ public class ShoppingCartItem
 
     public BigDecimal getLineTotal()
     {
+
         BigDecimal basePrice = product.getPrice();
         BigDecimal quantity = new BigDecimal(this.quantity);
 

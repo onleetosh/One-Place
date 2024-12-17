@@ -18,6 +18,10 @@ public class Product
     {
     }
 
+    public Product(String name) {
+        this.name = name;
+    }
+
     public Product(int productId, String name, BigDecimal price, int categoryId, String description, String color, int stock, boolean isFeatured, String imageUrl)
     {
         this.productId = productId;

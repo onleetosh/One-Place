@@ -1,7 +1,7 @@
 package org.yearup.data.mysql;
 
 import org.springframework.stereotype.Component;
-import org.yearup.data.CategoryDao;
+import org.yearup.data.interfaces.CategoryDao;
 import org.yearup.models.Category;
 
 import javax.sql.DataSource;
@@ -178,7 +178,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
         }
     }
 
-    private Category mapRow(ResultSet row) throws SQLException
+    protected static Category mapRow(ResultSet row) throws SQLException
     {
         int categoryId = row.getInt("category_id");
         String name = row.getString("name");

@@ -5,11 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.yearup.data.ProductDao;
-import org.yearup.data.ShoppingCartDao;
-import org.yearup.data.UserDao;
-import org.yearup.models.ShoppingCart;
-import org.yearup.models.ShoppingCartItem;
+import org.yearup.data.interfaces.ProductDao;
+import org.yearup.data.interfaces.ShoppingCartDao;
+import org.yearup.data.interfaces.UserDao;
+import org.yearup.models.cart.ShoppingCart;
+import org.yearup.models.cart.ShoppingCartItem;
 import org.yearup.models.User;
 
 import java.security.Principal;
@@ -25,7 +25,6 @@ public class ShoppingCartController
     // a shopping cart requires
     private ShoppingCartDao shoppingCartDao;
     private UserDao userDao;
-    private ProductDao productDao;
 
 
     @Autowired
@@ -34,8 +33,8 @@ public class ShoppingCartController
                                   ProductDao productDao) {
         this.shoppingCartDao = shoppingCartDao;
         this.userDao = userDao;
-        this.productDao = productDao;
     }
+
     /**
      * Get the shopping cart for the currently logged-in user. (JSON pass)
      */
@@ -51,16 +50,15 @@ public class ShoppingCartController
             // find database user by userId
             // Find the user by username
 
-
             User user = userDao.getByUserName(userName);
             if (user == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
             }
-//No items found in the shopping cart for user ID: 7  (because my account is new)
+            //No items found in the shopping cart for user ID: 7  (because my account is new)
             int userId = user.getId();
 
             ShoppingCart cart = shoppingCartDao.getByUserId(userId);
-//debug statement
+            //debug statement
             if (cart.getItems().isEmpty()) {
                 System.out.println("No items found in the shopping cart for user ID: " + userId);
             }
@@ -70,14 +68,12 @@ public class ShoppingCartController
         }
         catch(Exception e)
         {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error...");
         }
     }
 
-
-
     /**
-     * Add a product to the cart for the currently logged-in user
+     * Add a product to the cart for the currently logged-in user. (json passed )
      */
     // add a POST method to add a product to the cart - the url should be
     // https://localhost:8080/cart/products/15 (15 is the productId to be added
@@ -93,7 +89,7 @@ public class ShoppingCartController
             }
             System.out.println("User ID: " + user.getId() + ", Product ID: " + id);
 
-            shoppingCartDao.addToCart(user.getId(), id);  // Call to add product to cart
+            shoppingCartDao.doPost(user.getId(), id);  // Call to add product to cart
             System.out.println("Product added to cart.");
         } catch (Exception e) {
             e.printStackTrace();
@@ -104,7 +100,7 @@ public class ShoppingCartController
 
 
     /**
-     * Update the quantity of a product in the cart for the currently logged-in user.
+     * Update the quantity of a product in the cart for the currently logged-in user. (json passed)
      */
     // add a PUT method to update an existing product in the cart - the url should be
     // https://localhost:8080/cart/products/15 (15 is the productId to be updated)
@@ -115,12 +111,14 @@ public class ShoppingCartController
         try {
             String userName = principal.getName();
             User user = userDao.getByUserName(userName);
-            shoppingCartDao.updateCart(user.getId(), id, item.getQuantity());
+            shoppingCartDao.doPut(user.getId(), id, item.getQuantity());
         }
         catch (Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error...");
         }
     }
+
+
 
 
     /**
@@ -133,9 +131,10 @@ public class ShoppingCartController
         try {
             String userName = principal.getName();
             User user = userDao.getByUserName(userName);
-            shoppingCartDao.emptyCart(user.getId());
+            shoppingCartDao.doDelete(user.getId());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error clearing cart");
         }
     }
+
 }

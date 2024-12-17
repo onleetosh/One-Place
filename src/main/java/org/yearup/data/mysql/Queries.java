@@ -102,7 +102,7 @@ public class Queries {
      * Shopping cart query statements
      * @return
      */
-    public static String selectProductByUserId()
+    public static String selectCartByUserId()
     {
         return """
             SELECT
@@ -126,6 +126,7 @@ public class Queries {
                 shopping_cart.user_id = ?;
             """;
     }
+
     public static String selectQuantity()
     {
         return """
@@ -140,6 +141,10 @@ public class Queries {
                 SET quantity = ? 
                 WHERE user_id = ? AND product_id = ?
                 """;
+    }
+
+    public static String insertCart(){
+        return "INSERT INTO shopping_cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
     }
     public static String dropShoppingCart()
     {
@@ -184,6 +189,35 @@ public class Queries {
                     state = ?, 
                     zip = ? 
                 WHERE user_id = ?
+                """;
+    }
+
+
+    /**
+     * Order query statement
+     */
+    public static String insertOrder(){
+        return """
+                INSERT INTO 
+                orders (user_id, 
+                    date, 
+                    address, 
+                    city, 
+                    state, 
+                    zip, 
+                    shipping_amount)
+                VALUES (?, ?, ?, ?, ?, ?, ?);
+                """;
+    }
+    public static String insertOrderItemLine(){
+        return """
+                INSERT INTO 
+                    order_line_items (order_id, 
+                    product_id, 
+                    sales_price, 
+                    quantity, 
+                    discount)
+                VALUES (?, ?, ?, ?, ?);
                 """;
     }
 }

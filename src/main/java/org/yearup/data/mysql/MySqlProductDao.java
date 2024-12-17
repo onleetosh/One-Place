@@ -2,14 +2,13 @@ package org.yearup.data.mysql;
 
 import org.springframework.stereotype.Component;
 import org.yearup.models.Product;
-import org.yearup.data.ProductDao;
+import org.yearup.data.interfaces.ProductDao;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 @Component
 public class MySqlProductDao extends MySqlDaoBase implements ProductDao
 {
@@ -18,47 +17,28 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
         super(dataSource);
     }
 
+
+
     @Override
     public List<Product> search(Integer categoryId, BigDecimal minPrice, BigDecimal maxPrice, String color)
     {
         List<Product> products = new ArrayList<>();
 
-//                          **ERROR **
-//        String sql = "SELECT * FROM products " +
-//                "WHERE (category_id = ? OR ? = -1) " +
-//                "   AND (price <= ? OR ? = -1) " +
-//                "   AND (color = ? OR ? = '') ";
-
-
-
-        //                 ** ERROR
-//        categoryId = categoryId == null ? -1 : categoryId;
-//        minPrice = minPrice == null ? new BigDecimal("-1") : minPrice;
-//        maxPrice = maxPrice == null ? new BigDecimal("-1") : maxPrice;
-//        color = color == null ? "" : color;
-
-
-        categoryId = categoryId == null ? -1 : categoryId;
-        minPrice = minPrice == null ? new BigDecimal("-1") : minPrice;
-        maxPrice = maxPrice == null ? new BigDecimal("-1") : maxPrice;
-        color = color == null ? "" : color;
-
-
-
         try (Connection connection = getConnection())
         {
-            PreparedStatement stmt = connection.prepareStatement(Queries.selectProductsByFilter());
+            PreparedStatement statement = connection.prepareStatement(Queries.selectProductsByFilter());
+
 
             // Set the parameters
-            stmt.setInt(1, categoryId); // for categoryId
-            stmt.setInt(2, categoryId); // for categoryId (again)
-            stmt.setBigDecimal(3, minPrice); // for minPrice
-            stmt.setBigDecimal(4, minPrice); // for minPrice (again)
-            stmt.setBigDecimal(5, maxPrice); // for maxPrice
-            stmt.setBigDecimal(6, maxPrice); // for maxPrice (again)
-            stmt.setString(7, color); // for color
-            stmt.setString(8, color); // for color (again)
-            ResultSet row = stmt.executeQuery();
+            statement.setObject(1, categoryId == null ? null : categoryId); // for categoryId
+            statement.setObject(2, categoryId == null ? null : categoryId); // for categoryId (again)
+            statement.setObject(3, minPrice == null ? null : minPrice); // for minPrice
+            statement.setObject(4, minPrice == null ? null : minPrice); // for minPrice (again)
+            statement.setObject(5, maxPrice == null ? null : maxPrice); // for maxPrice
+            statement.setObject(6, maxPrice == null ? null : maxPrice); // for maxPrice (again)
+            statement.setObject(7, color == null ? null : color); // for color
+            statement.setObject(8, color == null ? null : color); // for color (again)
+            ResultSet row = statement.executeQuery();
 
             while (row.next())
             {
@@ -73,6 +53,7 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
 
         return products;
     }
+
 
     @Override
     public List<Product> listByCategoryId(int categoryId)
@@ -81,10 +62,10 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
 
         try (Connection connection = getConnection())
         {
-            PreparedStatement stmt = connection.prepareStatement(Queries.selectProductsByCatId());
-            stmt.setInt(1, categoryId);
+            PreparedStatement statement = connection.prepareStatement(Queries.selectProductsByCatId());
+            statement.setInt(1, categoryId);
 
-            ResultSet row = stmt.executeQuery();
+            ResultSet row = statement.executeQuery();
 
             while (row.next())
             {
@@ -96,9 +77,9 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
         {
             throw new RuntimeException(e);
         }
-
         return products;
     }
+
 
 
     @Override
@@ -123,27 +104,29 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
         return null;
     }
 
+    /**
+     * PASSED
+     */
     @Override
     public Product create(Product product)
     {
-
         try (Connection connection = getConnection())
         {
-            PreparedStatement stmt = connection.prepareStatement(Queries.insertProduct(), PreparedStatement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, product.getName());
-            stmt.setBigDecimal(2, product.getPrice());
-            stmt.setInt(3, product.getCategoryId());
-            stmt.setString(4, product.getDescription());
-            stmt.setString(5, product.getColor());
-            stmt.setString(6, product.getImageUrl());
-            stmt.setInt(7, product.getStock());
-            stmt.setBoolean(8, product.isFeatured());
+            PreparedStatement statement = connection.prepareStatement(Queries.insertProduct(), PreparedStatement.RETURN_GENERATED_KEYS);
+            statement.setString(1, product.getName());
+            statement.setBigDecimal(2, product.getPrice());
+            statement.setInt(3, product.getCategoryId());
+            statement.setString(4, product.getDescription());
+            statement.setString(5, product.getColor());
+            statement.setString(6, product.getImageUrl());
+            statement.setInt(7, product.getStock());
+            statement.setBoolean(8, product.isFeatured());
 
-            int rowsAffected = stmt.executeUpdate();
+            int rowsAffected = statement.executeUpdate();
 
             if (rowsAffected > 0) {
                 // Retrieve the generated keys
-                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                ResultSet generatedKeys = statement.getGeneratedKeys();
 
                 if (generatedKeys.next()) {
                     // Retrieve the auto-incremented ID
@@ -161,40 +144,41 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
         return null;
     }
 
+
     @Override
     public void update(int productId, Product product)
     {
-
         try (Connection connection = getConnection())
         {
-            PreparedStatement stmt = connection.prepareStatement(Queries.updateProductByProdId());
-            stmt.setString(1, product.getName());
-            stmt.setBigDecimal(2, product.getPrice());
-            stmt.setInt(3, product.getCategoryId());
-            stmt.setString(4, product.getDescription());
-            stmt.setString(5, product.getColor());
-            stmt.setString(6, product.getImageUrl());
-            stmt.setInt(7, product.getStock());
-            stmt.setBoolean(8, product.isFeatured());
-            stmt.setInt(9, productId);
+            PreparedStatement statement = connection.prepareStatement(Queries.updateProductByProdId());
+            statement.setString(1, product.getName());
+            statement.setBigDecimal(2, product.getPrice());
+            statement.setInt(3, product.getCategoryId());
+            statement.setString(4, product.getDescription());
+            statement.setString(5, product.getColor());
+            statement.setString(6, product.getImageUrl());
+            statement.setInt(7, product.getStock());
+            statement.setBoolean(8, product.isFeatured());
+            statement.setInt(9, productId);
 
-            stmt.executeUpdate();
+            statement.executeUpdate();
         }
         catch (SQLException e)
         {
             throw new RuntimeException(e);
         }
     }
+
 
     @Override
     public void delete(int productId)
     {
         try (Connection connection = getConnection())
         {
-            PreparedStatement stmt = connection.prepareStatement(Queries.dropProductById());
-            stmt.setInt(1, productId);
+            PreparedStatement statement = connection.prepareStatement(Queries.dropProductById());
+            statement.setInt(1, productId);
 
-            stmt.executeUpdate();
+            statement.executeUpdate();
         }
         catch (SQLException e)
         {
@@ -202,18 +186,17 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao
         }
     }
 
-    protected static Product mapRow(ResultSet row) throws SQLException
-    {
-        int productId = row.getInt("product_id");
-        String name = row.getString("name");
-        BigDecimal price = row.getBigDecimal("price");
-        int categoryId = row.getInt("category_id");
-        String description = row.getString("description");
-        String color = row.getString("color");
-        int stock = row.getInt("stock");
-        boolean isFeatured = row.getBoolean("featured");
-        String imageUrl = row.getString("image_url");
-
-        return new Product(productId, name, price, categoryId, description, color, stock, isFeatured, imageUrl);
+    protected static Product mapRow(ResultSet row) throws SQLException {
+        return new Product(
+                row.getInt("product_id"),
+                row.getString("name"),
+                row.getBigDecimal("price"),
+                row.getInt("category_id"),
+                row.getString("description"),
+                row.getString("color"),
+                row.getInt("stock"),
+                row.getBoolean("featured"),
+                row.getString("image_url")
+        );
     }
 }

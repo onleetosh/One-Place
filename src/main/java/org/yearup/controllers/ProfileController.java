@@ -4,8 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.yearup.data.ProfileDao;
+import org.yearup.data.interfaces.ProfileDao;
 import org.yearup.models.Profile;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @RestController
 @RequestMapping("profile")

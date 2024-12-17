@@ -6,7 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.yearup.models.Product;
-import org.yearup.data.ProductDao;
+import org.yearup.data.interfaces.ProductDao;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,6 +17,7 @@ import java.util.List;
 public class ProductsController
 {
     private ProductDao productDao;
+
 
     @Autowired
     public ProductsController(ProductDao productDao)
@@ -36,7 +37,7 @@ public class ProductsController
      * @param color Optional color to filter products.
      * @return List of products matching the search criteria.
      */
-    @GetMapping("")
+    @GetMapping()
     @PreAuthorize("permitAll()")
     public List<Product> search(@RequestParam(name="cat", required = false) Integer categoryId,
                                 @RequestParam(name="minPrice", required = false) BigDecimal minPrice,

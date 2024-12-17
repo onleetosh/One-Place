@@ -2,8 +2,7 @@ package org.yearup.data.mysql;
 
 import org.springframework.stereotype.Component;
 import org.yearup.models.Profile;
-import org.yearup.data.ProfileDao;
-import org.yearup.models.User;
+import org.yearup.data.interfaces.ProfileDao;
 
 import javax.sql.DataSource;
 import java.sql.*;
@@ -116,7 +115,7 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
     /**
      * Maps a ResultSet to a Profile object.
      */
-    private Profile mapRow(ResultSet row) throws SQLException
+    protected static Profile mapRow(ResultSet row) throws SQLException
     {
         int userId = row.getInt("user_id");
         String firstName = row.getString("first_name");
