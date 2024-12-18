@@ -56,7 +56,7 @@ public class ProfileController {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Profile not found");
         }
         // process update
-        profileDao.updateProfile(profile);
+        profileDao.update(profile);
     }
 
     // Method to check if the profile exists in the database

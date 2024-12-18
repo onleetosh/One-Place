@@ -6,7 +6,6 @@ public class Queries {
      * Categories query statements
      * @return
      */
-
     public static String selectCategories()
     {
         return "SELECT * FROM Categories";
@@ -19,8 +18,7 @@ public class Queries {
     {
         return "SELECT * FROM categories WHERE name = ?";
     }
-    public static String insertCategories()
-    {
+    public static String insertCategories() {
         return """
             INSERT INTO 
                 categories (name, description)
@@ -28,8 +26,7 @@ public class Queries {
                 (?, ?)
             """;
     }
-    public static String updateCategoriesByCatId()
-    {
+    public static String updateCategoriesByCatId() {
         return """
           UPDATE categories
           SET name = ?, description = ?
@@ -44,14 +41,13 @@ public class Queries {
     /**
      * Product query statements
      */
-    public static String selectProductsByFilter()
-    {
+    public static String selectProductsByFilter() {
         return """
           SELECT * FROM products
-          WHERE (? IS NULL OR category_id = ?)
-          AND (? IS NULL OR price >= ?)
-          AND (? IS NULL OR price <= ?)
-          AND (? IS NULL OR color = ?);
+          WHERE (category_id = ? OR ? = -1)
+          AND (price >= ? OR ? = -1)
+          AND (price <= ? OR ? = -1)
+          AND (color = ? OR ? = '');
           """;
     }
     public static String selectProductsByCatId()
@@ -62,8 +58,7 @@ public class Queries {
     {
         return "SELECT * FROM products WHERE product_id = ?";
     }
-    public static String insertProduct()
-    {
+    public static String insertProduct() {
         return """
           INSERT INTO 
                products(name, 
@@ -78,8 +73,7 @@ public class Queries {
                (?, ?, ?, ?, ?, ?, ?, ?);
           """;
     }
-    public static String updateProductByProdId()
-    {
+    public static String updateProductByProdId() {
          return """
             UPDATE products
             SET name = ?, 
@@ -102,8 +96,7 @@ public class Queries {
      * Shopping cart query statements
      * @return
      */
-    public static String selectCartByUserId()
-    {
+    public static String selectCartByUserId() {
         return """
             SELECT
                 products.product_id,
@@ -126,24 +119,20 @@ public class Queries {
                 shopping_cart.user_id = ?;
             """;
     }
-
-    public static String selectQuantity()
-    {
+    public static String selectQuantity() {
         return """
                 SELECT quantity FROM shopping_cart 
                 WHERE user_id = ? AND product_id = ?
                 """;
     }
-    public static String updateShoppingCart()
-    {
+    public static String updateShoppingCart() {
         return """
                 UPDATE shopping_cart 
                 SET quantity = ? 
                 WHERE user_id = ? AND product_id = ?
                 """;
     }
-
-    public static String insertCart(){
+    public static String insertShoppingCart(){
         return "INSERT INTO shopping_cart (user_id, product_id, quantity) VALUES (?, ?, ?)";
     }
     public static String dropShoppingCart()
@@ -154,8 +143,7 @@ public class Queries {
     /**
      * Profile query statements
      */
-    public static String insertProfile()
-    {
+    public static String insertProfile() {
         return """
                 INSERT INTO 
                     profiles (user_id, 
@@ -171,13 +159,11 @@ public class Queries {
                     (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
     }
-    public static String selectProfileById()
-    {
+    public static String selectProfileById() {
         return "SELECT * FROM profiles WHERE user_id = ?";
 
     }
-    public static String updateProfile()
-    {
+    public static String updateProfile() {
         return """
                 UPDATE profiles 
                 SET first_name = ?, 
@@ -192,11 +178,10 @@ public class Queries {
                 """;
     }
 
-
     /**
      * Order query statement
      */
-    public static String insertOrder(){
+    public static String insertOrders(){
         return """
                 INSERT INTO 
                 orders (user_id, 
@@ -209,7 +194,7 @@ public class Queries {
                 VALUES (?, ?, ?, ?, ?, ?, ?);
                 """;
     }
-    public static String insertOrderItemLine(){
+    public static String insertOrderLineItem(){
         return """
                 INSERT INTO 
                     order_line_items (order_id, 
@@ -219,5 +204,26 @@ public class Queries {
                     discount)
                 VALUES (?, ?, ?, ?, ?);
                 """;
+    }
+
+    /**
+     * User query statements
+     */
+    public static String insertUsers(){
+        return """
+                INSERT INTO 
+                    users (username, hashed_password, role) 
+                VALUES 
+                    (?, ?, ?)
+                """;
+    }
+    public static String selectUsers(){
+        return "SELECT * FROM users";
+    }
+    public static String selectUsersById(){
+        return "SELECT * FROM users WHERE user_id = ?";
+    }
+    public static String selectUsersByName(){
+        return "SELECT * FROM users WHERE username = ?";
     }
 }

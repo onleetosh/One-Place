@@ -20,12 +20,10 @@ import java.security.Principal;
 @RequestMapping("cart")
 @PreAuthorize("isAuthenticated()")
 @CrossOrigin
-public class ShoppingCartController
-{
+public class ShoppingCartController {
     // a shopping cart requires
     private ShoppingCartDao shoppingCartDao;
     private UserDao userDao;
-
 
     @Autowired
     public ShoppingCartController(ShoppingCartDao shoppingCartDao,
@@ -40,10 +38,8 @@ public class ShoppingCartController
      */
     @GetMapping
     // each method in this controller requires a Principal object as a parameter
-    public ShoppingCart getCart(Principal principal)
-    {
-        try
-        {
+    public ShoppingCart getCart(Principal principal) {
+        try {
             // get the currently logged in username
             String userName = principal.getName();
 
@@ -66,7 +62,7 @@ public class ShoppingCartController
             // use the shoppingcartDao to get all items in the cart and return the cart
             //return shoppingCartDao.getByUserId(userId);
         }
-        catch(Exception e)
+        catch(Exception ex)
         {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error...");
         }
@@ -89,15 +85,12 @@ public class ShoppingCartController
             }
             System.out.println("User ID: " + user.getId() + ", Product ID: " + id);
 
-            shoppingCartDao.doPost(user.getId(), id);  // Call to add product to cart
+            shoppingCartDao.post(user.getId(), id);  // Call to add product to cart
             System.out.println("Product added to cart.");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error...");
         }
     }
-
-
 
     /**
      * Update the quantity of a product in the cart for the currently logged-in user. (json passed)
@@ -111,9 +104,9 @@ public class ShoppingCartController
         try {
             String userName = principal.getName();
             User user = userDao.getByUserName(userName);
-            shoppingCartDao.doPut(user.getId(), id, item.getQuantity());
+            shoppingCartDao.update(user.getId(), id, item.getQuantity());
         }
-        catch (Exception e){
+        catch (Exception ex){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error...");
         }
     }
@@ -131,7 +124,7 @@ public class ShoppingCartController
         try {
             String userName = principal.getName();
             User user = userDao.getByUserName(userName);
-            shoppingCartDao.doDelete(user.getId());
+            shoppingCartDao.delete(user.getId());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error clearing cart");
         }

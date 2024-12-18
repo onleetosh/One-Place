@@ -2,6 +2,9 @@ package org.yearup.models.order;
 
 public class OrderLineItem {
 
+    /**
+     * Properties of a Order Line Item
+     */
     private int orderLineId;
     private int orderId;
     private int productId;

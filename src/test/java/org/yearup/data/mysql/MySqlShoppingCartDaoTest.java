@@ -42,7 +42,7 @@ public class MySqlShoppingCartDaoTest extends BaseDaoTestClass {
         int productId = 1;
 
         // Act
-        dao.doPost(userId, productId);  // Call the method
+        dao.post(userId, productId);  // Call the method
 
         // Assert
         ShoppingCart cart = dao.getByUserId(userId);  // Retrieve the shopping cart
@@ -64,8 +64,8 @@ public class MySqlShoppingCartDaoTest extends BaseDaoTestClass {
         int updatedQuantity = 5;
 
         // act
-        dao.doPost(userId, productId);        // add the item to the cart
-        dao.doPut(userId, productId, updatedQuantity); // call the method
+        dao.post(userId, productId);        // add the item to the cart
+        dao.update(userId, productId, updatedQuantity); // call the method
 
         // assert
         ShoppingCart cart = dao.getByUserId(userId); // retrieve the shopping cart
@@ -82,8 +82,8 @@ public class MySqlShoppingCartDaoTest extends BaseDaoTestClass {
         int productId = 1;
 
         // act
-        dao.doPost(userId, productId); // add the item to the cart
-        dao.doDelete(userId); // delete the item from the cart
+        dao.post(userId, productId); // add the item to the cart
+        dao.delete(userId); // delete the item from the cart
 
         // assert
         ShoppingCart cart = dao.getByUserId(userId); // retrieve the shopping cart

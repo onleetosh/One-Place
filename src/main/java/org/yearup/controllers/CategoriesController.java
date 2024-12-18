@@ -58,8 +58,7 @@ public class CategoriesController
     // add the appropriate annotation for a get action
     @GetMapping("{id}")
     @PreAuthorize("permitAll()")
-    public Category getById(@PathVariable int id)
-    {
+    public Category getById(@PathVariable int id) {
         // get the category by id
         Category category = categoryDao.getById(id);
         if (category == null) {
@@ -74,17 +73,14 @@ public class CategoriesController
     // the url to return all products in category 1 would look like this
     // https://localhost:8080/categories/1/products
     @GetMapping("{categoryId}/products")
-    public List<Product> getProductsById(@PathVariable int categoryId)
-    {
+    public List<Product> getProductsById(@PathVariable int categoryId) {
         //check is category exist first
 
         // get a list of product by categoryId
-        try
-        {
+        try {
             return productDao.listByCategoryId(categoryId);
         }
-        catch(Exception ex)
-        {
+        catch(Exception ex) {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Oops... our bad.");
         }
     }
@@ -97,19 +93,15 @@ public class CategoriesController
     // add annotation to ensure that only an ADMIN can call this function
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public Category addCategory(@RequestBody Category category)
-    {
+    public Category addCategory(@RequestBody Category category) {
         // Check if the category already exists
         if (categoryExists(category.getName())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Category already exists.");
         }
-
-        try
-        {
-            return categoryDao.createCategory(category);
+        try {
+            return categoryDao.create(category);
         }
-        catch(Exception ex)
-        {
+        catch(Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
         }
     }
@@ -120,7 +112,6 @@ public class CategoriesController
     private boolean categoryExists(String name) {
         return categoryDao.getByName(name) != null;
     }
-
 
 
 
@@ -135,20 +126,10 @@ public class CategoriesController
     public void updateCategory(@PathVariable int id, @RequestBody Category category)
     {
         // update the category by id
-        try
-        {
+        try {
             categoryDao.update(id, category);
         }
-        catch(Exception ex)
-        {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error...");
-        }     // update the category by id
-        try
-        {
-            categoryDao.update(id, category);
-        }
-        catch(Exception ex)
-        {
+        catch(Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error...");
         }
     }
@@ -164,12 +145,10 @@ public class CategoriesController
     public void deleteCategory(@PathVariable int id)
     {
         // delete the category by id
-        try
-        {
+        try {
             categoryDao.delete(id);
         }
-        catch(Exception e)
-        {
+        catch(Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error...");
         }
     }

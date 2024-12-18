@@ -2,8 +2,6 @@ package org.yearup.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,62 +39,29 @@ public class OrderController {
     }
 
     /**
-     * Process checkout: Convert shopping cart to an order and clear the cart.
+     * Endpoint to process checkout: Converts the user's shopping cart into an order and clears the cart.
+     *
+     * @param principal The currently logged-in user's information.
+     * @return The created Order object.
      */
     @PostMapping
     public Order checkout(Principal principal) {
         try {
-            // retrieve the currently logged-in user
+            // Retrieve the currently logged-in user
             String username = principal.getName();
-            User user = userDao.getByUserName(username);
-            if (user == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-            }
-
-            // get the user's shopping cart
-            ShoppingCart cart = shoppingCartDao.getByUserId(user.getId());
-            if (cart == null || cart.getItems().isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Shopping cart is empty");
-            }
-
-            // get user profile (for address details)
-            Profile profile = profileDao.getProfileById(user.getId());
-            if (profile == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User profile not found");
-            }
-
-            // create the order based on the shopping cart and user profile
-            Order order = new Order();
-            order.setUserId(user.getId());
-            order.setDate(LocalDateTime.now());
-            order.setShipping_amount(cart.getTotal());
-            order.setAddress(profile.getAddress());
-            order.setCity(profile.getCity());
-            order.setState(profile.getState());
-            order.setZip(profile.getZip());
-
-            // insert the order into the database
-            Order createdOrder = orderDao.postOrder(order, profile, cart);
-
-            // insert order line items for each item in the cart
-            for (ShoppingCartItem cartItem : cart.getItems().values()) {
-                Product product = cartItem.getProduct(); // Get the product associated with the cart item
-                OrderLineItem orderLineItem = new OrderLineItem();
-                orderLineItem.setOrderId(createdOrder.getOrderId());
-                orderLineItem.setProductId(product.getProductId());
-                orderLineItem.setSalesPrice(product.getPrice().precision());
-                orderLineItem.setQuantity(cartItem.getQuantity());
-                orderLineItem.setDiscount(cartItem.getDiscountPercent().precision());
-
-                // insert each order line item into the database
-                orderDao.creatOrderLineItem(createdOrder, orderLineItem, product, cartItem);
-            }
-
+            User user = getCurrentUser(username);
+            // Get the user's shopping cart
+            ShoppingCart cart = getCartFromUser(user);
+            // Get user profile (for address details)
+            Profile profile = getUserProfile(user);
+            // create the order to insert
+            Order order = saveOrder(user, profile, cart);
+            // insert the order line item
+            saveOrderLineItems(order, cart);
             // clear the shopping cart after the order is confirmed
-            shoppingCartDao.doDelete(user.getId());
-
-            // return the created order object directly
-            return createdOrder;
+            shoppingCartDao.delete(user.getId());
+            // return the created order
+            return order;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,5 +70,90 @@ public class OrderController {
     }
 
 
+    /**
+     * Retrieve the currently logged-in user from the database.
+     *
+     * @param username The username of the logged-in user.
+     * @return The User object.
+     * @throws ResponseStatusException if the user is not found.
+     */
+    private User getCurrentUser(String username){
+        User user = userDao.getByUserName(username);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        return user;
+    }
+
+    /**
+     * Retrieve the user's shopping cart from the database.
+     *
+     * @param user The logged-in User object.
+     * @return The ShoppingCart object containing items the user wants to purchase.
+     * @throws ResponseStatusException if the shopping cart is empty or not found.
+     */
+    private ShoppingCart getCartFromUser(User user){
+        ShoppingCart cart = shoppingCartDao.getByUserId(user.getId());
+        if (cart == null || cart.getItems().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Shopping cart is empty");
+        }
+        return cart;
+    }
+    /**
+     * Retrieve the user's profile from the database to fetch address details.
+     *
+     * @param user The logged-in User object.
+     * @return The Profile object containing user address and contact information.
+     * @throws ResponseStatusException if the profile is not found.
+     */
+    private Profile getUserProfile(User user){
+        Profile profile = profileDao.getProfileById(user.getId());
+        if (profile == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User profile not found");
+        }
+        return profile;
+    }
+
+    /**
+     * Create and save a new order for the user.
+     *
+     * @param user    The logged-in User object.
+     * @param profile The user's Profile object for address details.
+     * @param cart    The ShoppingCart object containing items the user wants to purchase.
+     * @return The created Order object.
+     */
+    private Order saveOrder(User user, Profile profile, ShoppingCart cart){
+        // Create a new Order object and
+        Order order = new Order();
+        order.setUserId(user.getId());
+        order.setDate(LocalDateTime.now());
+        order.setShipping_amount(cart.getTotal());
+        order.setAddress(profile.getAddress());
+        order.setCity(profile.getCity());
+        order.setState(profile.getState());
+        order.setZip(profile.getZip());
+        return orderDao.createOrder(order, profile, cart);
+    }
+
+    /**
+     * Create and save order line items for each product in the shopping cart.
+     *
+     * @param order The created Order object.
+     * @param cart  The ShoppingCart object containing items the user wants to purchase.
+     */
+    private void saveOrderLineItems(Order order, ShoppingCart cart){
+        // Loop through the cart and insert order line items for each item in the cart
+        for (ShoppingCartItem cartItem : cart.getItems().values()) {
+            Product product = cartItem.getProduct();
+            // Create a new OrderLineItem object for each product
+            OrderLineItem orderLineItem = new OrderLineItem();
+            orderLineItem.setOrderId(order.getOrderId());
+            orderLineItem.setProductId(product.getProductId());
+            orderLineItem.setSalesPrice(product.getPrice().precision());
+            orderLineItem.setQuantity(cartItem.getQuantity());
+            orderLineItem.setDiscount(cartItem.getDiscountPercent().precision());
+            orderDao.creatOrderLineItem(order, orderLineItem, product, cartItem);
+        }
+    }
 }
 

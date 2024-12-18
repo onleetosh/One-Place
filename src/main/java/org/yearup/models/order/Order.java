@@ -1,11 +1,7 @@
 package org.yearup.models.order;
 
-import org.yearup.models.Profile;
-import org.yearup.models.cart.ShoppingCart;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class Order {
     /**
@@ -20,6 +16,9 @@ public class Order {
     private String zip;
     private BigDecimal shipping_amount; //total amount
 
+    /**
+     * Default constructor for creating a Order with no predefined values.
+     */
     public Order()
     {
     }
