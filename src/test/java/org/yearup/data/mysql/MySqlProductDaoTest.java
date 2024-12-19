@@ -1,5 +1,6 @@
 package org.yearup.data.mysql;
 
+import org.apache.ibatis.javassist.bytecode.DuplicateMemberException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.yearup.models.Product;
@@ -20,9 +21,6 @@ class MySqlProductDaoTest extends BaseDaoTestClass
     }
 
 
-    /**
-     * test for public Product getById(int productId)
-     */
     @Test
     public void getById_shouldReturn_theCorrectProduct()
     {
@@ -48,13 +46,10 @@ class MySqlProductDaoTest extends BaseDaoTestClass
         assertEquals(expected.getPrice(), actual.getPrice(), "Because I tried to get product 1 from the database.");
     }
 
-    /**
-     * test for public List<Product> search(Integer categoryId, BigDecimal minPrice, BigDecimal maxPrice, String color)
-     */
+
     @Test
-    public void test_search_and_filter() {
+    public void test_case_search_and_filter() {
         // Arrange
-        // Insert test data using the schema provided or ensure the database is pre-populated for the test.
         List<Product> expectedProducts = List.of(
                 new Product() {{
                     setProductId(1);
@@ -96,10 +91,10 @@ class MySqlProductDaoTest extends BaseDaoTestClass
      * test for  public List<Product> listByCategoryId(int categoryId)
      */
     @Test
-    public void listByCategoryId_shouldReturnProductsForCategory() {
+    public void test_case_list_By_CategoryId() {
         // Arrange
         int categoryId = 1; // Electronics
-        Product expectedProduct1 = new Product() {{
+        Product p1 = new Product() {{
             setProductId(1);
             setName("Smartphone");
             setPrice(new BigDecimal("499.99"));
@@ -110,7 +105,8 @@ class MySqlProductDaoTest extends BaseDaoTestClass
             setFeatured(false);
             setImageUrl("smartphone.jpg");
         }};
-        Product expectedProduct2 = new Product() {{
+
+        Product p2 = new Product() {{
             setProductId(2);
             setName("Laptop");
             setPrice(new BigDecimal("899.99"));
@@ -121,7 +117,8 @@ class MySqlProductDaoTest extends BaseDaoTestClass
             setFeatured(false);
             setImageUrl("laptop.jpg");
         }};
-        Product expectedProduct3 = new Product() {{
+
+        Product p3 = new Product() {{
             setProductId(3);
             setName("Headphones");
             setPrice(new BigDecimal("99.99"));
@@ -132,7 +129,7 @@ class MySqlProductDaoTest extends BaseDaoTestClass
             setFeatured(true);
             setImageUrl("headphones.jpg");
         }};
-        List<Product> expectedProducts = List.of(expectedProduct1, expectedProduct2, expectedProduct3);
+        List<Product> expectedProducts = List.of(p1, p2, p3);
 
         // Act
         List<Product> actualProducts = dao.listByCategoryId(categoryId);
@@ -147,10 +144,10 @@ class MySqlProductDaoTest extends BaseDaoTestClass
      * test for public Product getById(int productId)
      */
     @Test
-    public void getByID_test(){
+    public void test_case_get_product_by_id_(){
         // Arrange: Define the expected product
         int productId = 1;
-        Product expectedProduct = new Product(
+        Product p2 = new Product(
                 1,
                 "Smartphone",
                 new BigDecimal("499.99"),
@@ -162,22 +159,23 @@ class MySqlProductDaoTest extends BaseDaoTestClass
                 "smartphone.jpg" );
 
         // Act: Call the method to get the product by ID
-        Product product = dao.getById(productId);
+        Product p1 = dao.getById(productId);
 
         // Assert: Verify that the returned product matches the expected product
-        assertNotNull(product, "The product should not be null");
-        assertEquals(expectedProduct.getProductId(), product.getProductId(), "The product retrieved should match the expected product");
+        assertNotNull(p1, "The product should not be null");
+        assertEquals(p2.getProductId(), p1.getProductId(), "The product retrieved should match the expected product");
     }
+
 
 
     /**
      * Test for public Product create(Product product)
      */
     @Test
-    public void test_public_Product_create_MySqlProductDao(){
-        //arrange
+    public void test_case_create_new_product(){
+        // Arrange
 
-        Product newProduct = new Product(
+        Product p1 = new Product(
                 0,
                 "Ipad",
                 new BigDecimal("199.99"),
@@ -187,29 +185,62 @@ class MySqlProductDaoTest extends BaseDaoTestClass
                 50,
                 false,
                 "iPad.jpg" );
-        //act
-        Product p = dao.create(newProduct);
-
-        Product productFromDb = dao.getById(p.getProductId());
+        // Act
+        Product p2 = dao.create(p1);
 
 
-        // assert: Verify that the created product matches the expected product
-        assertNotNull(p, "The created product should not be null");
-        assertEquals(newProduct.getName(), p.getName(), "The name should match");
-        assertEquals(newProduct.getPrice(), p.getPrice(), "The price should match");
-        assertEquals(newProduct.getCategoryId(), p.getCategoryId(), "The category ID should match");
-        assertEquals(newProduct.getDescription(), p.getDescription(), "The description should match");
-        assertEquals(newProduct.getColor(), p.getColor(), "The color should match");
-        assertEquals(newProduct.getStock(), p.getStock(), "The stock should match");
-        assertEquals(newProduct.isFeatured(), p.isFeatured(), "The featured flag should match");
-        assertEquals(newProduct.getImageUrl(), p.getImageUrl(), "The image URL should match");
+
+        // Assert
+        assertNotNull(p2, "The created product should not be null");
+        assertEquals(p1.getName(), p2.getName(), "The name should match");
+        assertEquals(p1.getPrice(), p2.getPrice(), "The price should match");
+        assertEquals(p1.getCategoryId(), p2.getCategoryId(), "The category ID should match");
+        assertEquals(p1.getDescription(), p2.getDescription(), "The description should match");
+        assertEquals(p1.getColor(), p2.getColor(), "The color should match");
+        assertEquals(p1.getStock(), p2.getStock(), "The stock should match");
+        assertEquals(p1.isFeatured(), p2.isFeatured(), "The featured flag should match");
+        assertEquals(p1.getImageUrl(), p2.getImageUrl(), "The image URL should match");
     }
 
     @Test
-    public void test_updateProduct() {
+    public void test_case_create_duplicate_product() {
+        // Arrange
+        Product p1 = new Product(
+                999,
+                "PS5 pro",
+                new BigDecimal("499.99"),
+                1,
+                "A powerful and feature-rich smartphone for all your communication needs.",
+                "Black",
+                50,
+                false,
+                "PS5_pro.jpg"
+        );
+        dao.create(p1);
+
+        // Act
+        Product p2 = new Product(
+                999,
+                "PS5 pro", // Same name
+                new BigDecimal("499.99"),
+                1,            // Same category
+                "Duplicate smartphone entry.",
+                "Black",
+                50,
+                false,
+                "PS5_pro_duplicate.jpg"
+        );
+
+        //assert
+        Exception exception = assertThrows(RuntimeException.class, () -> dao.create(p2));
+        assertEquals("A product with the same name and category already exists.", exception.getMessage());
+    }
+
+    @Test
+    public void test_case_update_product() {
         // arrange: Create a new product
         int productId = 1;
-        Product initialProduct = new Product(
+        Product p1 = new Product(
                 productId,
                 "Old Smartphone",
                 new BigDecimal("299.99"),
@@ -222,10 +253,10 @@ class MySqlProductDaoTest extends BaseDaoTestClass
         );
 
         // insert the initial product into the database (you could use your existing create method)
-        dao.create(initialProduct);
+        dao.create(p1);
 
         // New product data for update
-        Product updatedProduct = new Product(
+        Product p2 = new Product(
                 productId,
                 "Updated Smartphone",
                 new BigDecimal("399.99"),
@@ -238,27 +269,27 @@ class MySqlProductDaoTest extends BaseDaoTestClass
         );
 
         // Act: Update the product using the update method
-        dao.update(productId, updatedProduct);
+        dao.update(productId, p2);
 
         // Assert: Retrieve the updated product from the database
         Product productFromDb = dao.getById(productId);
 
         // Verify that the product's attributes have been updated correctly
         assertNotNull(productFromDb, "The product should not be null.");
-        assertEquals(updatedProduct.getName(), productFromDb.getName(), "The name should be updated.");
-        assertEquals(updatedProduct.getPrice(), productFromDb.getPrice(), "The price should be updated.");
-        assertEquals(updatedProduct.getCategoryId(), productFromDb.getCategoryId(), "The category ID should be updated.");
-        assertEquals(updatedProduct.getDescription(), productFromDb.getDescription(), "The description should be updated.");
-        assertEquals(updatedProduct.getColor(), productFromDb.getColor(), "The color should be updated.");
-        assertEquals(updatedProduct.getStock(), productFromDb.getStock(), "The stock should be updated.");
-        assertEquals(updatedProduct.isFeatured(), productFromDb.isFeatured(), "The featured flag should be updated.");
-        assertEquals(updatedProduct.getImageUrl(), productFromDb.getImageUrl(), "The image URL should be updated.");
+        assertEquals(p2.getName(), productFromDb.getName(), "The name should be updated.");
+        assertEquals(p2.getPrice(), productFromDb.getPrice(), "The price should be updated.");
+        assertEquals(p2.getCategoryId(), productFromDb.getCategoryId(), "The category ID should be updated.");
+        assertEquals(p2.getDescription(), productFromDb.getDescription(), "The description should be updated.");
+        assertEquals(p2.getColor(), productFromDb.getColor(), "The color should be updated.");
+        assertEquals(p2.getStock(), productFromDb.getStock(), "The stock should be updated.");
+        assertEquals(p2.isFeatured(), productFromDb.isFeatured(), "The featured flag should be updated.");
+        assertEquals(p2.getImageUrl(), productFromDb.getImageUrl(), "The image URL should be updated.");
     }
 
     @Test
-    public void test_delete() {
+    public void test_case_delete_product() {
         // Arrange: Insert a product into the database for deletion
-        Product productToDelete = new Product(
+        Product p1 = new Product(
                 0,  // Assuming the product ID is auto-generated
                 "Test Product",
                 new BigDecimal("149.99"),
@@ -271,7 +302,7 @@ class MySqlProductDaoTest extends BaseDaoTestClass
         );
 
         // Create the product and retrieve the generated ID
-        Product createdProduct = dao.create(productToDelete);
+        Product createdProduct = dao.create(p1);
         int productIdToDelete = createdProduct.getProductId();
 
         // Act: Delete the product

@@ -18,7 +18,7 @@ public class MySqlShoppingCartDaoTest extends BaseDaoTestClass {
 
 
     @Test
-    public void testGetByUserId_whenNoItemsInCart() {
+    public void test_case_GetByUserId_whenNoItemsInCart() {
         // Arrange
         int userId = 1;
 
@@ -35,7 +35,7 @@ public class MySqlShoppingCartDaoTest extends BaseDaoTestClass {
 
 
     @Test
-    public void testProcessPost(){
+    public void test_case_add_to_ShoppingCart(){
 
         // Arrange
         int userId = 1;
@@ -56,7 +56,7 @@ public class MySqlShoppingCartDaoTest extends BaseDaoTestClass {
     }
 
     @Test
-    public void testProcessPut() {
+    public void test_case_update_Item_Quantity() {
 
         // arrange
         int userId = 1;
@@ -76,7 +76,7 @@ public class MySqlShoppingCartDaoTest extends BaseDaoTestClass {
     }
 
     @Test
-    public void testProcessDelete() {
+    public void test_case_empty_ShoppingCart() {
         // arrange
         int userId = 1;
         int productId = 1;

@@ -1,5 +1,7 @@
 package org.yearup.data.mysql;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.yearup.data.interfaces.OrderDao;
 import org.yearup.models.Product;
@@ -19,6 +21,8 @@ import java.time.LocalDateTime;
  */
 @Component
 public class MySqlOrderDao extends MySqlDaoBase implements OrderDao {
+
+    private static final Logger logger = LoggerFactory.getLogger(MySqlOrderDao.class);
 
     /**
      * Constructor for MySqlOrderDao.
@@ -64,6 +68,8 @@ public class MySqlOrderDao extends MySqlDaoBase implements OrderDao {
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     order.setOrderId(generatedKeys.getInt(1));
+                    logger.debug("Created order with ID: {}", order.getOrderId());
+
                 } else {
                     // Handle any SQL exceptions that occur
                     throw new SQLException("Insert failed, no ID obtained.");
@@ -71,6 +77,7 @@ public class MySqlOrderDao extends MySqlDaoBase implements OrderDao {
             }
         }
         catch (SQLException e) {
+            logger.error("Error inserting order", e);
             // Handle any SQL exceptions that occur
             throw new RuntimeException("Error inserting order", e);
         }
@@ -111,12 +118,14 @@ public class MySqlOrderDao extends MySqlDaoBase implements OrderDao {
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     line.setOrderLineId(generatedKeys.getInt(1)); // Set the generated  ID
+                    logger.debug("Created order line item with ID: {}", line.getOrderLineId());
                 } else {
                     // Handle any SQL exceptions that occur
                     throw new SQLException("Insert failed, no ID obtained.");
                 }
             }
         } catch (SQLException e) {
+            logger.error("Error inserting order line item", e);
             // Handle any SQL exceptions that occur
             throw new RuntimeException("Error inserting order line item", e);
         }

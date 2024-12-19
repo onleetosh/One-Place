@@ -1,5 +1,7 @@
 package org.yearup.data.mysql;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.yearup.data.interfaces.CategoryDao;
 import org.yearup.models.Category;
@@ -16,6 +18,8 @@ import java.util.List;
 @Component
 public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
 {
+    private static final Logger logger = LoggerFactory.getLogger(MySqlCategoryDao.class);
+
     /**
      * Constructor for MySqlCategoryDao.
      *
@@ -50,10 +54,11 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
                         results.getString(3) //description
                 );
                 category.add(cat);
-                System.out.println("Added Category: " + cat);
+                logger.debug("Added Category: {}", cat);
             }
         } catch (SQLException e) {
             // Wrap and rethrow any SQL exceptions
+            logger.error("Error retrieving categories", e);
             throw new RuntimeException("Error retrieving categories", e);
         }
         return category; // Return null if no category is found
@@ -85,6 +90,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
                 }
             }
         } catch (SQLException e) {
+            logger.error("Error retrieving category by ID: {}", categoryId, e);
             // Wrap and rethrow any SQL exceptions
             throw new RuntimeException("Error retrieving category by ID: " + categoryId, e);
         }
@@ -120,6 +126,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
         }
         catch (SQLException e)
         {
+            logger.error("Error retrieving category by name: {}", name, e);
             // Wrap and rethrow any SQL exceptions
             throw new RuntimeException("Error retrieving category by name: " + name, e);
         }
@@ -154,6 +161,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
             }
         }
         catch (SQLException e) {
+            logger.error("Error inserting category", e);
             // Wrap and rethrow any SQL exceptions
             throw new RuntimeException("Error inserting category", e);
         }
@@ -185,6 +193,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
                 throw new SQLException("Update failed, no rows affected.");
             }
         } catch (SQLException e) {
+            logger.error("Error updating category with ID: {}", categoryId, e);
             // Wrap and rethrow any SQL exceptions
             throw new RuntimeException("Error updating category with ID: " + categoryId, e);
         }

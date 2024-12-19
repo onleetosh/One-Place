@@ -21,7 +21,7 @@ public class MySqlProfileDaoTest extends BaseDaoTestClass{
     }
 
     @Test
-    public void testCreateProfile(){
+    public void test_case_create_profile(){
         // arrange
         User user = new User();
         Profile profile = new Profile();
@@ -54,8 +54,9 @@ public class MySqlProfileDaoTest extends BaseDaoTestClass{
         assertEquals(profile.getEmail(), getNewProfile.getEmail(), "Email should match");
     }
 
+
     @Test
-    public void testGetProfileById(){
+    public void test_case_get_Profile_By_Id(){
         // Arrange
         int setUserId = 1;
         // Act
@@ -71,7 +72,7 @@ public class MySqlProfileDaoTest extends BaseDaoTestClass{
     }
 
     @Test
-    public void testUpdateProfile(){
+    public void test_case_UpdateProfile(){
         // Arrange
         Profile setProfile = dao.getProfileById(1);
         assertNotNull(setProfile, "Profile to be updated should exist.");
@@ -80,7 +81,7 @@ public class MySqlProfileDaoTest extends BaseDaoTestClass{
         setProfile.setCity("Houston");
 
         // Act
-        dao.updateProfile(setProfile);
+        dao.update(setProfile);
         Profile getUpdatedProfile = dao.getProfileById(1);
 
         // Assert

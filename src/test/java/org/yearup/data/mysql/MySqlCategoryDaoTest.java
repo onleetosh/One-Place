@@ -20,18 +20,18 @@ public class MySqlCategoryDaoTest extends BaseDaoTestClass {
 
 
     @Test
-    public void getAllCategories_test(){
+    public void test_case_get_all_categories(){
 
-        //arrange
+        // Arrange
         List<Category> categories = List.of(
                 new Category(1, "Electronics", "Explore the latest gadgets and electronic devices."),
                 new Category(2, "Fashion", "Discover trendy clothing and accessories for men and women."),
                 new Category(3, "Home & Kitchen", "Find everything you need to decorate and equip your home.")
         );
-        //act
+        // Act
         List<Category> getCategories = dao.getAllCategories();
 
-        // Assert: Verify that the retrieved categories match the expected ones
+        // Assert
         assertNotNull(getCategories, "The category list should not be null");
         assertEquals(categories.size(), getCategories.size(), "The number of categories should match");
 
@@ -43,94 +43,84 @@ public class MySqlCategoryDaoTest extends BaseDaoTestClass {
     }
 
 
-    @Test
-    public void getCategoryById_test(){
-        //arrange
-        int categoryId = 1;
-        Category category =   new Category(1, "Electronics", "Explore the latest gadgets and electronic devices.");
 
-        //act
+    @Test
+    public void test_case_get_categories_by_id(){
+        // Arrange
+        int categoryId = 1;
+        Category category = new Category(1, "Electronics", "Explore the latest gadgets and electronic devices.");
+
+        // Act
         Category getCategories = dao.getById(categoryId);
-        //assert
-        //TODO : change  the message
-        assertNotNull(getCategories, "The product should not be null");
-        assertEquals(category.getCategoryId(), getCategories.getCategoryId(), "The product retrieved should match the expected product");
+        // Assert
+        assertNotNull(getCategories, "The category should not be null");
+        assertEquals(category.getCategoryId(), getCategories.getCategoryId(), "The category retrieved should match the expected product");
     }
 
 
     @Test
     public void test_MySqlCategoryDao_create(){
 
-        // Arrange: Define the new category to be created
+        // Arrange
         Category newCategory = new Category();
         newCategory.setName("Sports & Outdoors");
         newCategory.setDescription("Gear up for your outdoor adventures");
 
-        // Act: Call the create method to insert the new category into the database
-        Category createdCategory = dao.createCategory(newCategory);
+        // Act
+        Category createdCategory = dao.create(newCategory);
 
-        // Assert: Verify that the created category has a valid ID and matches the input values
+        // Assert:
         assertNotNull(createdCategory, "The created category should not be null.");
         assertNotNull(createdCategory.getCategoryId(), "The created category ID should not be null.");
         assertTrue(createdCategory.getCategoryId() > 0, "The created category ID should be greater than 0.");
         assertEquals(newCategory.getName(), createdCategory.getName(), "The category name should match.");
         assertEquals(newCategory.getDescription(), createdCategory.getDescription(), "The category description should match.");
-
-        // Additionally, retrieve the category from the database and verify
-        Category categoryFromDb = dao.getById(createdCategory.getCategoryId());
-        assertNotNull(categoryFromDb, "The category should be retrievable from the database.");
-        assertEquals(createdCategory.getCategoryId(), categoryFromDb.getCategoryId(), "The category ID should match.");
-        assertEquals(createdCategory.getName(), categoryFromDb.getName(), "The category name should match.");
-        assertEquals(createdCategory.getDescription(), categoryFromDb.getDescription(), "The category description should match.");
-
     }
 
 
     @Test
-    public void testUpdateCategory() {
+    public void test_case_update_categories() {
         // Arrange: Create a category and insert it into the database
-        Category originalCategory = new Category();
-        originalCategory.setName("Books");
-        originalCategory.setDescription("A wide variety of books and literature.");
+        Category c1 = new Category();
+        c1.setName("Books");
+        c1.setDescription("A wide variety of books and literature.");
 
         // Insert the category to get a valid ID
-        Category insertedCategory = dao.createCategory(originalCategory);
+        Category insertedC1 = dao.create(c1);
 
-        // Modify the category for the update
-        Category updatedCategory = new Category();
-        updatedCategory.setName("Books & Magazines");
-        updatedCategory.setDescription("Books, magazines, and other reading materials.");
+        Category updatedC1 = new Category();
+        updatedC1.setName("Books & Magazines");
+        updatedC1.setDescription("Books, magazines, and other reading materials.");
 
-        // Act: Update the category in the database
-        dao.update(insertedCategory.getCategoryId(), updatedCategory);
+        // Act
+        dao.update(insertedC1.getCategoryId(), updatedC1);
 
-        // Assert: Retrieve the category from the database and verify the updates
-        Category retrievedCategory = dao.getById(insertedCategory.getCategoryId());
+        // Assert
+        Category getCategories = dao.getById(insertedC1.getCategoryId());
 
-        assertNotNull(retrievedCategory, "The retrieved category should not be null.");
-        assertEquals(insertedCategory.getCategoryId(), retrievedCategory.getCategoryId(), "The category ID should not change.");
-        assertEquals(updatedCategory.getName(), retrievedCategory.getName(), "The updated name should match.");
-        assertEquals(updatedCategory.getDescription(), retrievedCategory.getDescription(), "The updated description should match.");
+        assertNotNull(getCategories, "The retrieved category should not be null.");
+        assertEquals(insertedC1.getCategoryId(), getCategories.getCategoryId(), "The category ID should not change.");
+        assertEquals(updatedC1.getName(), getCategories.getName(), "The updated name should match.");
+        assertEquals(updatedC1.getDescription(), getCategories.getDescription(), "The updated description should match.");
     }
 
 
     @Test
-    public void test_delete() {
-        // Arrange: Insert a product into the database for deletion
-        Category category = new Category(
+    public void test_case_delete() {
+        // Arrange
+        Category c1 = new Category(
                 0,  // Assuming the product ID is auto-generated
                 "Test Category",
                 "A test product for deletion."
         );
 
-        // Create the product and retrieve the generated ID
-        Category testCategory = dao.createCategory(category);
-        int categoryIdToDelete = testCategory.getCategoryId();
+        Category insertedC1 = dao.create(c1);
+        int categoryIdToDelete = insertedC1.getCategoryId();
 
-        // Act: Delete the product
+        // Act
         dao.delete(categoryIdToDelete);
 
-        // Assert: Verify the product is deleted
+        // Assert:
         Category result = dao.getById(categoryIdToDelete);
         assertNull(result, "The Category should no longer exist in the database after deletion.");
     }

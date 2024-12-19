@@ -27,8 +27,7 @@ public class ShoppingCartController {
 
     @Autowired
     public ShoppingCartController(ShoppingCartDao shoppingCartDao,
-                                  UserDao userDao,
-                                  ProductDao productDao) {
+                                  UserDao userDao) {
         this.shoppingCartDao = shoppingCartDao;
         this.userDao = userDao;
     }

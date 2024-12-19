@@ -106,7 +106,6 @@ public class ShoppingCartItem
      */
     public BigDecimal getLineTotal()
     {
-
         BigDecimal basePrice = product.getPrice();
         BigDecimal quantity = new BigDecimal(this.quantity);
 

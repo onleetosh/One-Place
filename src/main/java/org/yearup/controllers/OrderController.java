@@ -62,7 +62,6 @@ public class OrderController {
             shoppingCartDao.delete(user.getId());
             // return the created order
             return order;
-
         } catch (Exception e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error processing checkout");

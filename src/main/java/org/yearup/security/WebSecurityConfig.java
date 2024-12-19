@@ -17,11 +17,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    // Dependencies for authentication and authorization mechanisms
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final UserModelDetailsService userModelDetailsService;
 
+    // Constructor to inject dependencies
     public WebSecurityConfig(
             TokenProvider tokenProvider,
             JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
@@ -40,17 +42,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     /**
-     * Configure paths and requests that should be ignored by Spring Security
-     * @param web
+     * Configure which paths should be ignored by Spring Security, i.e., public access paths
+     * @param web - the WebSecurity object to customize the security configuration
      */
     public void configure(WebSecurity web) {
+        // Allow OPTIONS requests without security filtering (useful for cross-origin resource sharing - CORS)
         web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
     }
 
+
     /**
-     * Configure security settings
-     * @param httpSecurity
-     * @throws Exception
+     * Configure the main security settings for HTTP requests
+     * @param httpSecurity - the HttpSecurity object to define the security configuration
+     * @throws Exception - if an error occurs while configuring security
      */
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
@@ -58,20 +62,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // we don't need CSRF because our token is invulnerable
                 .csrf().disable()
 
+                // Configure exception handling for authentication and authorization errors
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler)
 
-                // create no session
+                // Configure session management to be stateless (no session creation)
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
+                // Apply the JWT configuration to HTTP security
                 .and()
                 .apply(securityConfigurerAdapter());
     }
 
     private JWTConfigurer securityConfigurerAdapter() {
+        // Pass the token provider to JWTConfigurer for token-based authentication
         return new JWTConfigurer(tokenProvider);
     }
 }

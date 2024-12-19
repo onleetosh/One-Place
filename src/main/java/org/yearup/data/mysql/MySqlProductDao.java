@@ -1,5 +1,7 @@
 package org.yearup.data.mysql;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.yearup.models.Product;
 import org.yearup.data.interfaces.ProductDao;
@@ -16,6 +18,7 @@ import java.util.List;
  */
 @Component
 public class MySqlProductDao extends MySqlDaoBase implements ProductDao {
+    private static final Logger logger = LoggerFactory.getLogger(MySqlProductDao.class);
 
     /**
      * Constructor for MySqlProductDao.
@@ -62,6 +65,7 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao {
                 Product product = mapRow(row);
                 products.add(product);
             }
+            logger.debug("Found {} products based on filters.", products.size());
         }
         catch (SQLException e) {
             // Throw a runtime exception if an SQL error occurs

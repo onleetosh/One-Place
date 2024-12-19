@@ -17,19 +17,27 @@ public class SecurityUtils {
     }
 
     /**
-     * Get the login of the current user.
+     * Retrieves the username of the currently authenticated user.
      *
-     * @return the login of the current user.
+     * This method checks the security context to get the authentication object,
+     * and based on the principal, extracts the username.
+     *
+     * @return an Optional containing the username of the current user if present,
+     *         or an empty Optional if no authentication information is available.
      */
     public static Optional<String> getCurrentUsername() {
+        // Get the authentication object from the SecurityContextHolder
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        // If no authentication is present, log and return empty Optional
         if (authentication == null) {
             LOG.debug("no authentication context found");
             return Optional.empty();
         }
 
+        // Variable to hold the username
         String username = null;
+        // Check if the principal is an instance of UserDetails (common in Spring Security)
         if (authentication.getPrincipal() instanceof UserDetails springSecurityUser) {
             username = springSecurityUser.getUsername();
         } else if (authentication.getPrincipal() instanceof String) {
@@ -38,6 +46,7 @@ public class SecurityUtils {
 
         LOG.debug("found username '{}' in context", username);
 
+        // Return the username wrapped in an Optional (it could be null, hence Optional)
         return Optional.ofNullable(username);
     }
 }

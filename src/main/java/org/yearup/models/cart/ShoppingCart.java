@@ -75,5 +75,8 @@ public class ShoppingCart
 
         return total;
     }
+    public BigDecimal setTotal(BigDecimal bigDecimal){
+        return bigDecimal;
+    }
 
 }
