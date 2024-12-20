@@ -80,7 +80,7 @@ Orders
 - POST /api/orders - Confirm order (from the cart) 
 - GET /api/orders - Get all orders for the logged in user 
 
-# Future Implements
+# Future Enchancements 
 
 - Develop a secure method for users to recover their forgotten passwords.
 - All products should have reviews and a rating.
