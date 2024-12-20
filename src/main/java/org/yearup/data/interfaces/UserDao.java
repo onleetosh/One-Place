@@ -6,6 +6,7 @@
  */
 package org.yearup.data.interfaces;
 
+import org.springframework.web.server.ResponseStatusException;
 import org.yearup.models.User;
 
 import java.util.List;
@@ -52,4 +53,14 @@ public interface UserDao {
      * @return True if the user exists, otherwise false.
      */
     boolean exists(String username);
+
+    /**
+     * Retrieve the currently logged-in user from the database.
+     *
+     * @param username The username of the logged-in user.
+     * @return The User object.
+     * @throws ResponseStatusException if the user is not found.
+     */
+
+    User getCurrentUser(String username);
 }

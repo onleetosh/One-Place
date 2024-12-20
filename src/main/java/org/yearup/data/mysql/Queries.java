@@ -143,6 +143,9 @@ public class Queries {
     /**
      * Profile query statements
      */
+    public static String selectProfiles(){
+        return "SELECT * FROM profiles ";
+    }
     public static String insertProfile() {
         return """
                 INSERT INTO 
@@ -165,14 +168,14 @@ public class Queries {
     }
     public static String updateProfile() {
         return """
-                UPDATE profiles 
+                UPDATE profiles
                 SET first_name = ?, 
-                    last_name = ?, 
+                    last_name = ?,  
                     phone = ?, 
                     email = ?, 
                     address = ?, 
-                    city = ?, 
-                    state = ?, 
+                    city = ?,
+                    state = ?,
                     zip = ? 
                 WHERE user_id = ?
                 """;
@@ -194,7 +197,7 @@ public class Queries {
                 VALUES (?, ?, ?, ?, ?, ?, ?);
                 """;
     }
-    public static String insertOrderLineItem(){
+    public static String insertOrderLineItems(){
         return """
                 INSERT INTO 
                     order_line_items (order_id, 

@@ -2,6 +2,7 @@ package org.yearup.data.interfaces;
 
 import org.yearup.models.Product;
 import org.yearup.models.Profile;
+import org.yearup.models.User;
 import org.yearup.models.cart.ShoppingCart;
 import org.yearup.models.cart.ShoppingCartItem;
 import org.yearup.models.order.Order;
@@ -30,6 +31,23 @@ public interface OrderDao {
      */
     OrderLineItem creatOrderLineItem(Order order, OrderLineItem line, Product product, ShoppingCartItem item);
 
+    /**
+     * Create and insert a new order for the user.
+     *
+     * @param user    The logged-in User object.
+     * @param profile The user's Profile object for address details.
+     * @param cart    The ShoppingCart object containing items the user wants to purchase.
+     * @return The created Order object.
+     */
+    Order insertOrder(User user, Profile profile, ShoppingCart cart);
 
+    /**
+     * Create and insert order line items for each product in the shopping cart.
+     *
+     * @param order The created Order object.
+     * @param cart  The ShoppingCart object containing items the user wants to purchase.
+     */
+
+    void insertOrderLineItem(Order order, ShoppingCart cart);
 
 }

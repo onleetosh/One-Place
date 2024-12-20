@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.yearup.models.Product;
 import org.yearup.data.interfaces.ProductDao;
+import org.yearup.models.Profile;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
@@ -146,14 +147,8 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao {
             // Prepare the SQL statement and set the parameter to process the query
             PreparedStatement stmt = connection.prepareStatement(Queries.insertProduct(),
                     PreparedStatement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, product.getName());
-            stmt.setBigDecimal(2, product.getPrice());
-            stmt.setInt(3, product.getCategoryId());
-            stmt.setString(4, product.getDescription());
-            stmt.setString(5, product.getColor());
-            stmt.setString(6, product.getImageUrl());
-            stmt.setInt(7, product.getStock());
-            stmt.setBoolean(8, product.isFeatured());
+            // set product parameters
+            setProductParams(stmt, product);
 
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected > 0) {
@@ -200,26 +195,35 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao {
      */
     @Override
     public void update(int productId, Product product) {
-        // Establish a connection to the database
         try (Connection connection = getConnection()) {
             // Prepare the SQL statement and set the parameter to process the query
             PreparedStatement stmt = connection.prepareStatement(Queries.updateProductByProdId());
-            stmt.setString(1, product.getName());
-            stmt.setBigDecimal(2, product.getPrice());
-            stmt.setInt(3, product.getCategoryId());
-            stmt.setString(4, product.getDescription());
-            stmt.setString(5, product.getColor());
-            stmt.setString(6, product.getImageUrl());
-            stmt.setInt(7, product.getStock());
-            stmt.setBoolean(8, product.isFeatured());
+
+            // set product parameters
+            setProductParams(stmt, product);
+
+            // Set the product ID to update
             stmt.setInt(9, productId);
 
             stmt.executeUpdate();
-        }
-        catch (SQLException e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException("Error updating the product.", e);
         }
     }
+    /**
+     * Helper method to set the parameters for the PreparedStatement.
+     */
+    private void setProductParams(PreparedStatement stmt, Product product) throws SQLException {
+        stmt.setString(1, product.getName());
+        stmt.setBigDecimal(2, product.getPrice());
+        stmt.setInt(3, product.getCategoryId());
+        stmt.setString(4, product.getDescription());
+        stmt.setString(5, product.getColor());
+        stmt.setString(6, product.getImageUrl());
+        stmt.setInt(7, product.getStock());
+        stmt.setBoolean(8, product.isFeatured());
+    }
+
 
     /**
      * Deletes a product from the database by its product ID.

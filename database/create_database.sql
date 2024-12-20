@@ -2,13 +2,13 @@ USE sys;
 
 # ---------------------------------------------------------------------- #
 # Target DBMS:           MySQL                                           #
-# Project name:          EasyShop                                        #
+# Project name:          OnePlace                                        #
 # ---------------------------------------------------------------------- #
-DROP DATABASE IF EXISTS easyshop;
+DROP DATABASE IF EXISTS oneplace;
 
-CREATE DATABASE IF NOT EXISTS easyshop;
+CREATE DATABASE IF NOT EXISTS oneplace;
 
-USE easyshop;
+USE oneplace;
 
 # ---------------------------------------------------------------------- #
 # Tables                                                                 #

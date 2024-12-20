@@ -7,6 +7,8 @@
 package org.yearup.data.interfaces;
 
 import org.yearup.models.Profile;
+import org.yearup.models.User;
+
 
 public interface ProfileDao {
 
@@ -26,11 +28,12 @@ public interface ProfileDao {
      */
     Profile getProfileById(int id);
 
+    Profile getUserProfile(User user);
     /**
-     * Update the details of an existing user profile.
+     * Update the details of current user profile.
      *
      * @param profile The Profile object containing the updated details of the user profile.
      */
-    void update(Profile profile);
+    void update(Profile profile, User user);
 
 }

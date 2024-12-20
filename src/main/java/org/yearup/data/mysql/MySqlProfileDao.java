@@ -1,11 +1,17 @@
 package org.yearup.data.mysql;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 import org.yearup.models.Profile;
 import org.yearup.data.interfaces.ProfileDao;
+import org.yearup.models.User;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Data Access Object (DAO) responsible for handling database operations related to user profiles.
  * This class implements the ProfileDao interface and interacts with a MySQL database.
@@ -22,6 +28,7 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
         super(dataSource);
     }
 
+
     /**
      * Inserts a new profile record into the database.
      *
@@ -29,41 +36,29 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
      * @return The saved Profile object with an updated userId if generated automatically.
      */
     @Override
-    public Profile create(Profile profile)
-    {
+    public Profile create(Profile profile) {
         // Establish a connection to the database
-        try(Connection connection = getConnection())
-        {
+        try (Connection connection = getConnection()) {
             // Prepare the SQL statement to insert a new profile into the database.
             PreparedStatement ps = connection.prepareStatement(Queries.insertProfile(), PreparedStatement.RETURN_GENERATED_KEYS);
-            // Set the values for the prepared statement.
-            ps.setInt(1, profile.getUserId());
-            ps.setString(2, profile.getFirstName());
-            ps.setString(3, profile.getLastName());
-            ps.setString(4, profile.getPhone());
-            ps.setString(5, profile.getEmail());
-            ps.setString(6, profile.getAddress());
-            ps.setString(7, profile.getCity());
-            ps.setString(8, profile.getState());
-            ps.setString(9, profile.getZip());
-            ps.executeUpdate(); // Execute query.
-            // Retrieving generated keys (auto-increment ID)
+            // Set the values for the prepared statement using the helper method
+            setProfileParams(ps, profile);
+            // Execute query.
+            ps.executeUpdate();
+            // Retrieve the generated keys (auto-increment ID)
             try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    // Assuming that your profile class has a setter for ID
+                    // Set the generated userId (auto-incremented ID) in the profile
                     profile.setUserId(generatedKeys.getInt(1));
                 }
             }
 
             return profile; // Return the updated Profile object.
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             // Handle SQL exceptions by throwing a RuntimeException
             throw new RuntimeException("Error creating profile", e);
         }
     }
-
     /**
      * Retrieves a user's profile by their userId.
      *
@@ -73,42 +68,43 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
     @Override
     public Profile getProfileById(int userId) {
         // Establish a connection to the database and prepare the SQL statement
-        try(Connection connection = getConnection();
-            PreparedStatement stmt = connection.prepareStatement(
-                    Queries.selectProfileById()))
-        {
+        try (Connection connection = getConnection();
+             PreparedStatement stmt = connection.prepareStatement(Queries.selectProfileById())) {
+
             // Set the ID parameter for the query
             stmt.setInt(1, userId);
+
             // Execute the query and process the results
-            try( ResultSet rs = stmt.executeQuery()){
-                while (rs.next()){
-                    int id = rs.getInt(1);
-                    String firstName = rs.getString(2);
-                    String lastName = rs.getString(3);
-                    String phone = rs.getString(4);
-                    String email = rs.getString(5);
-                    String address = rs.getString(6);
-                    String city = rs.getString(7);
-                    String state = rs.getString(8);
-                    String zip = rs.getString(9);
-                    // Map the result set to a Profile object and return it.
-                    return new Profile(id,
-                            firstName,
-                            lastName,
-                            phone,
-                            email,
-                            address,
-                            city,
-                            state,
-                            zip
-                    );
+            try (ResultSet row = stmt.executeQuery()) {
+                if (row.next()) {
+                    // Use mapRow method to convert the ResultSet to a Profile object
+                    return mapRow(row);
                 }
             }
         } catch (SQLException e) {
             // Handle SQL exceptions by throwing a RuntimeException
             throw new RuntimeException("Error retrieving profile for user ID " + userId, e);
         }
-        return null; // Return null if no profile was found.
+
+        // Return null if no profile was found
+        return null;
+    }
+
+
+    /**
+     * Retrieve the user's profile from the database to fetch address details.
+     *
+     * @param user The logged-in User object.
+     * @return The Profile object containing user address and contact information.
+     * @throws ResponseStatusException if the profile is not found.
+     */
+    @Override
+    public Profile getUserProfile(User user) {
+        Profile profile = getProfileById(user.getId());
+        if (profile == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User profile not found");
+        }
+        return profile;
     }
 
     /**
@@ -117,29 +113,36 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
      * @param profile The Profile object containing updated information.
      */
     @Override
-    public void update(Profile profile) {
+    public void update(Profile profile, User user) {
 
         // Establish a connection to the database
-        try (Connection connection = getConnection())
-        {
-            // Prepare the SQL statement to insert a new profile into the database.
+        try (Connection connection = getConnection()) {
+            // Prepare the SQL statement to update the profile in the database
             PreparedStatement stmt = connection.prepareStatement(Queries.updateProfile());
-            // Set the values for the prepared statement.
-            stmt.setString(1, profile.getFirstName());
-            stmt.setString(2, profile.getLastName());
-            stmt.setString(3, profile.getPhone());
-            stmt.setString(4, profile.getEmail());
-            stmt.setString(5, profile.getAddress());
-            stmt.setString(6, profile.getCity());
-            stmt.setString(7, profile.getState());
-            stmt.setString(8, profile.getZip());
-            stmt.setInt(9, profile.getUserId());
-            // Execute the query.
+            // Set the values for the prepared statement
+            setProfileParams(stmt, profile);
+            stmt.setInt(9, user.getId());
+            // Execute the update query
             stmt.executeUpdate();
         } catch (SQLException e) {
             // Handle SQL exceptions by throwing a RuntimeException
             throw new RuntimeException("Error updating profile for user ID " + profile.getUserId(), e);
         }
+    }
+
+
+    /**
+     * Helper method to set the parameters for the PreparedStatement.
+     */
+    private void setProfileParams(PreparedStatement stmt, Profile profile) throws SQLException {
+        stmt.setString(1, profile.getFirstName());
+        stmt.setString(2, profile.getLastName());
+        stmt.setString(3, profile.getPhone());
+        stmt.setString(4, profile.getEmail());
+        stmt.setString(5, profile.getAddress());
+        stmt.setString(6, profile.getCity());
+        stmt.setString(7, profile.getState());
+        stmt.setString(8, profile.getZip());
     }
 
     /**

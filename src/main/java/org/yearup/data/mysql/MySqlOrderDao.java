@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.yearup.data.interfaces.OrderDao;
 import org.yearup.models.Product;
 import org.yearup.models.Profile;
+import org.yearup.models.User;
 import org.yearup.models.cart.ShoppingCart;
 import org.yearup.models.cart.ShoppingCartItem;
 import org.yearup.models.order.Order;
@@ -101,7 +102,7 @@ public class MySqlOrderDao extends MySqlDaoBase implements OrderDao {
                                             ShoppingCartItem item) {
         // Establish a connection to the database, prepare the SQL statement and generate key
         try (Connection connection = getConnection();
-             PreparedStatement stmt = connection.prepareStatement(Queries.insertOrderLineItem(),
+             PreparedStatement stmt = connection.prepareStatement(Queries.insertOrderLineItems(),
                      PreparedStatement.RETURN_GENERATED_KEYS)) {
             // Set the parameters to process query insert
             stmt.setInt(1, order.getOrderId()); // Set order ID
@@ -130,6 +131,42 @@ public class MySqlOrderDao extends MySqlDaoBase implements OrderDao {
             throw new RuntimeException("Error inserting order line item", e);
         }
         return line; // Return the created order line item with the generated ID
+    }
+
+    @Override
+    public Order insertOrder(User user, Profile profile, ShoppingCart cart) {
+        // Create a new Order object and
+        Order order = new Order();
+        order.setUserId(user.getId());
+        order.setDate(LocalDateTime.now());
+        order.setShipping_amount(cart.getTotal());
+        order.setAddress(profile.getAddress());
+        order.setCity(profile.getCity());
+        order.setState(profile.getState());
+        order.setZip(profile.getZip());
+        return createOrder(order, profile, cart);
+    }
+
+    /**
+     * Create and save order line items for each product in the shopping cart.
+     *
+     * @param order The created Order object.
+     * @param cart  The ShoppingCart object containing items the user wants to purchase.
+     */
+    @Override
+    public void insertOrderLineItem(Order order, ShoppingCart cart) {
+        // Loop through the cart and insert order line items for each item in the cart
+        for (ShoppingCartItem cartItem : cart.getItems().values()) {
+            Product product = cartItem.getProduct();
+            // Create a new OrderLineItem object for each product
+            OrderLineItem orderLineItem = new OrderLineItem();
+            orderLineItem.setOrderId(order.getOrderId());
+            orderLineItem.setProductId(product.getProductId());
+            orderLineItem.setSalesPrice(product.getPrice());
+            orderLineItem.setQuantity(cartItem.getQuantity());
+            orderLineItem.setDiscount(cartItem.getDiscountPercent().precision());
+            creatOrderLineItem(order, orderLineItem, product, cartItem);
+        }
     }
 }
 

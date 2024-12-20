@@ -1,7 +1,9 @@
 package org.yearup.data.mysql;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 import org.yearup.data.interfaces.UserDao;
 import org.yearup.models.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -174,6 +176,16 @@ public class MySqlUserDao extends MySqlDaoBase implements UserDao {
         User user = getByUserName(username);
         return user != null;
     }
+
+    @Override
+    public User getCurrentUser(String username) {
+        User user = getByUserName(username);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        return user;
+    }
+
     /**
      * Maps a ResultSet to a User object.
      * @param row The ResultSet object containing the query result.

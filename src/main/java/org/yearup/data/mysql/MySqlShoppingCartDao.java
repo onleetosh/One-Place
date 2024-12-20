@@ -1,8 +1,11 @@
 package org.yearup.data.mysql;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 import org.yearup.data.interfaces.ShoppingCartDao;
 import org.yearup.models.Product;
+import org.yearup.models.User;
 import org.yearup.models.cart.ShoppingCart;
 import org.yearup.models.cart.ShoppingCartItem;
 
@@ -30,17 +33,17 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
     /**
      * Retrieves the shopping cart for a specific user ID.
      *
-     * @param userId The ID of the user whose shopping cart needs to be fetched.
+     * @param user The ID of the user whose shopping cart needs to be fetched.
      * @return The ShoppingCart object containing the items for the user.
      */
     @Override
-    public ShoppingCart getByUserId(int userId) {
+    public ShoppingCart getByUserId(User user) {
         ShoppingCart cart = new ShoppingCart();
 
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(Queries.selectCartByUserId())) {
             // Set the userId in the query
-            stmt.setInt(1, userId);
+            stmt.setInt(1, user.getId());
 
             try (ResultSet row = stmt.executeQuery()) {
                 while (row.next()) {
@@ -50,7 +53,23 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
             }
         } catch (SQLException e) {
             // Handle SQL exceptions by throwing a RuntimeException
-            throw new RuntimeException("Error retrieving shopping cart for user ID " + userId + ": " + e);
+            throw new RuntimeException("Error retrieving shopping cart for user ID " + e);
+        }
+        return cart;
+    }
+
+    /**
+     * Retrieve the user's shopping cart from the database.
+     *
+     * @param user The logged-in User object.
+     * @return The ShoppingCart object containing items the user wants to purchase.
+     * @throws ResponseStatusException if the shopping cart is empty or not found.
+     */
+    @Override
+    public ShoppingCart getConfirmedCart(User user) {
+        ShoppingCart cart = getByUserId(user);
+        if (cart == null || cart.getItems().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Shopping cart is empty");
         }
         return cart;
     }
@@ -59,18 +78,18 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
     /**
      * Adds a product to the user's shopping cart. If the product already exists, increments the quantity.
      *
-     * @param userId    The ID of the user.
+     * @param user  The ID of the user.
      * @param productId The ID of the product to be added.
      */
     @Override
-    public void post(int userId, int productId)
+    public void post(User user, int productId)
     {
         // SQL query to check if the product is already in the cart
         String checkSql = Queries.selectQuantity();
 
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(checkSql)) {
-            stmt.setInt(1, userId);
+            stmt.setInt(1, user.getId());
             stmt.setInt(2, productId);
 
             try (ResultSet rs = stmt.executeQuery()) {
@@ -81,14 +100,14 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
 
                     try (PreparedStatement updateStmt = connection.prepareStatement(Queries.updateShoppingCart())) {
                         updateStmt.setInt(1, updateQuantity);
-                        updateStmt.setInt(2, userId);
+                        updateStmt.setInt(2, user.getId());
                         updateStmt.setInt(3, productId);
                         updateStmt.executeUpdate();
                     }
                 } else {
                     // If the product is not in the cart, insert new record
                     try (PreparedStatement insertStmt = connection.prepareStatement(Queries.insertShoppingCart())) {
-                        insertStmt.setInt(1, userId);
+                        insertStmt.setInt(1, user.getId());
                         insertStmt.setInt(2, productId);
                         insertStmt.setInt(3, 1);  // 1 is quantity default
                         insertStmt.executeUpdate();
@@ -105,17 +124,17 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
     /**
      * Updates the quantity of a product in the shopping cart.
      *
-     * @param userId    The ID of the user.
+     * @param user    The ID of the user.
      * @param productId The ID of the product to be updated.
      * @param quantity  The new quantity for the product.
      */
     @Override
-    public void update(int userId, int productId, int quantity) {
+    public void update(User user, int productId, int quantity) {
 
         try (Connection connection = getConnection();
              PreparedStatement stmt = connection.prepareStatement(Queries.updateShoppingCart())) {
             stmt.setInt(1, quantity);
-            stmt.setInt(2, userId);
+            stmt.setInt(2, user.getId());
             stmt.setInt(3, productId);
             stmt.executeUpdate();
 
@@ -124,18 +143,18 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
             throw new RuntimeException("Error updating product quantity in cart", e);
         }
     }
+
     /**
      * Deletes all items from the shopping cart for a specific user.
      *
-     * @param userId The ID of the user whose cart needs to be cleared.
+     * @param user The ID of the user whose cart needs to be cleared.
      */
     @Override
-    public void delete(int userId) {
+    public void delete(User user) {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(Queries.dropShoppingCart())) {
-            stmt.setInt(1, userId);
+            stmt.setInt(1, user.getId());
             stmt.executeUpdate();
-
         } catch (SQLException e) {
             throw new RuntimeException("Error clearing shopping cart", e);
         }
