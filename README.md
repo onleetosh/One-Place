@@ -80,6 +80,17 @@ Orders
 - POST /api/orders - Confirm order (from the cart) 
 - GET /api/orders - Get all orders for the logged in user 
 
+# Future Implements
+
+- Develop a secure method for users to recover their forgotten passwords.
+- All products should have reviews and a rating.
+- Enhance the search functionality to allow users to filter products based on brands and ratings.
+- Currently, you need to be a registered user to add items to a cart. However, there should be an option for guest
+- Enhance the shopping cart feature by removing a single product instead of an empty cart, and allowing users to save products for later use
+- Users should be able to view their order history.
+- There should be a membership option with different tiers, such as basic and pro.
+
+
 # Author 
 - Pluralsight
 - Tosh

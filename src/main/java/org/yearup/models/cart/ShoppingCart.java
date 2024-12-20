@@ -72,11 +72,9 @@ public class ShoppingCart
                                 .stream()
                                 .map(i -> i.getLineTotal())
                                 .reduce( BigDecimal.ZERO, (lineTotal, subTotal) -> subTotal.add(lineTotal));
-
         return total;
     }
     public BigDecimal setTotal(BigDecimal bigDecimal){
         return bigDecimal;
     }
-
 }
