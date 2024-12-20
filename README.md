@@ -25,26 +25,27 @@ Postman or any API client (for testing the API)
 
 # Setup and Installation
 1. Clone the repository
-   git clone https://github.com/yourusername/easyshop-backend.git
+
+git clone https://github.com/yourusername/easyshop-backend.git
 2. Set up database
-   Create a MySQL database named easyshop.
-   Update the application.properties 
-   spring.datasource.url=jdbc:mysql://localhost:3306/easyshop
-   spring.datasource.username=root
-   spring.datasource.password= <yourpassword>
-3. Run the application
-The API will be accessible at http://localhost:8080
-4. Open PostMan
-   use path /api/login with a body request { "username":"admin", "password":"password" } to
-   generate bearer token for authentication  
+    
+3. Update the application.properties
+spring.datasource.password= <yourpassword>
+
+4. Run the application
+
+4. Open PostMan. API will be accessible at http://localhost:8080
+
+6. Log in - /api/login and generate bearer token for authentication { "username":"admin", "password":"password" } 
+   
 
 # API Endpoints
 Here is a list of the key API endpoints:
-19
+
 - Authentication
 
-- POST /api/register - Register a new user 1
-- POST /api/login - Log in and get a JWT token2
+- POST /api/register - Register a new user 
+- POST /api/login - Log in and get a JWT token
 - 
 - Products
 
@@ -63,15 +64,15 @@ Here is a list of the key API endpoints:
 - DELETE /api/categories/{id} - Delete categories by categoryId
 
 - Profile
-- GET /api/profile - View profiles
-- PUT /api/profile - Update a profile 
+- GET /api/profile - View profile of current user logged in
+- PUT /api/profile - Update a profile of current user logged in 
 
 - Cart
 
-- GET /api/cart - View the current shopping cart 
-- POST /api/cart/products/{id} - Add a product to the shopping cart 12
-- PUT /api/cart/products/{id} - Update a product by productId  12
-- DELETE /api/cart/{itemId} - Remove an item from the cart 13
+- GET /api/cart - View the shopping cart 
+- POST /api/cart/products/{id} - Add a product to the shopping cart 
+- PUT /api/cart/products/{id} - Update a product by productId  
+- DELETE /api/cart/{itemId} - Remove an item from the cart 
 
 - Orders
 
