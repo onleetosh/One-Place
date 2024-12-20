@@ -33,7 +33,7 @@ public class ProfileController {
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Profile> getCurrentUserProfile(Principal principal) {
-        
+
         String username = principal.getName();
         User user = userDao.getCurrentUser(username);
         logger.debug("Fetching profile for user: {}", user);

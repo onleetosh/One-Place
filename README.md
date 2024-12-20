@@ -1,4 +1,4 @@
-<img width="518" alt="one-place-logo" src="https://github.com/user-attachments/assets/e5dd1d59-62d3-4feb-b2ac-cf8c0410ab97" />
+<img width="900" alt="one-place-logo" src="https://github.com/user-attachments/assets/e5dd1d59-62d3-4feb-b2ac-cf8c0410ab97" height="500"/>
 
 A robust and secure backend API built using Spring Boot and Java and serves as the foundation for the e-commerce website,
 offering a user-friendly platform for online shopping.
