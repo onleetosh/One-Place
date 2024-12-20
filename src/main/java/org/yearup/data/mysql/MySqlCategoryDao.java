@@ -222,6 +222,17 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
             throw new RuntimeException("Error deleting category with ID: " + categoryId, e);
         }
     }
+
+
+    /**
+     *  method to check if a category exists.
+     */
+    @Override
+    public boolean categoryExist(String name) {
+        return getByName(name) != null;
+    }
+
+
     /**
      * Utility method to map a single ResultSet row to a Category object.
      *

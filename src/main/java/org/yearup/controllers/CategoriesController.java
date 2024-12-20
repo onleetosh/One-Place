@@ -96,9 +96,8 @@ public class CategoriesController
     @PostMapping
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Category> addCategory(@RequestBody Category category) {
-        if (categoryExists(category.getName())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(null);
+        if (categoryDao.categoryExist(category.getName())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
         try {
             Category createdCategory = categoryDao.create(category);
@@ -107,14 +106,6 @@ public class CategoriesController
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-    /**
-     * Helper method to check if a category exists.
-     */
-    private boolean categoryExists(String name) {
-        return categoryDao.getByName(name) != null;
-    }
-
 
 
     /**

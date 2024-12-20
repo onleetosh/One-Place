@@ -62,4 +62,6 @@ public interface ProductDao {
      * @param productId The ID of the product to delete.
      */
     void delete(int productId);
+
+    boolean productExist(String name, int categoryId);
 }

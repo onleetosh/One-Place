@@ -60,15 +60,15 @@ public class ProductsController
      * Endpoint to fetch a product by its ID.
      * This endpoint is accessible to all users.
      *
-     * @param id ID of the product to fetch.
+     * @param productId ID of the product to fetch.
      * @return The product with the specified ID.
      * @throws ResponseStatusException if the product is not found or an error occurs.
      */
-    @GetMapping("{id}")
+    @GetMapping("{productId}")
     @PreAuthorize("permitAll()")
-    public ResponseEntity<Product> getById(@PathVariable int id) {
+    public ResponseEntity<Product> getById(@PathVariable int productId) {
         try {
-            Product product = productDao.getById(id);
+            Product product = productDao.getById(productId);
             if (product == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
@@ -97,15 +97,15 @@ public class ProductsController
     /**
      * Endpoint to update an existing product by its ID. Only accessible to users with ADMIN role.
      *
-     * @param id The ID of the product to update.
+     * @param productId The ID of the product to update.
      * @param product The updated product data.
      * @throws ResponseStatusException if an error occurs during the update.
      */
-    @PutMapping("{id}")
+    @PutMapping("{productId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> updateProduct(@PathVariable int id, @RequestBody Product product) {
+    public ResponseEntity<Void> updateProduct(@PathVariable int productId, @RequestBody Product product) {
         try {
-            productDao.update(id, product);
+            productDao.update(productId, product);
             return ResponseEntity.noContent().build();
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -117,19 +117,19 @@ public class ProductsController
     /**
      * Endpoint to delete a product by its ID. Only accessible to users with ADMIN role.
      *
-     * @param id The ID of the product to delete.
+     * @param productId The ID of the product to delete.
      * @throws ResponseStatusException if the product is not found or an error occurs during deletion.
      */
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("{productId}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Void> deleteProduct(@PathVariable int id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable int productId) {
         try {
-            Product product = productDao.getById(id);
+            Product product = productDao.getById(productId);
             if (product == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
             }
-            productDao.delete(id);
+            productDao.delete(productId);
             return ResponseEntity.noContent().build();
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

@@ -14,7 +14,7 @@ offering a user-friendly platform for online shopping.
 - Java 
 - Spring Boot 
 - Spring Security (for JWT-based authentication)
-- MySQLWorkbench (database)
+- MySQLWorkbench (data storage)
 - JSON (for testing)
 
 # Requirements

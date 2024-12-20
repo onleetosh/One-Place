@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.yearup.models.Product;
 import org.yearup.data.interfaces.ProductDao;
-import org.yearup.models.Profile;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
@@ -82,7 +81,7 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao {
      */
     @Override
     public List<Product> listByCategoryId(int categoryId) {
-        // Declare a empty List to store the results
+        // Declare an empty List to store the results
         List<Product> products = new ArrayList<>();
         // Establish a connection to the database
         try (Connection connection = getConnection()) {
@@ -139,7 +138,7 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao {
      */
     @Override
     public Product create(Product product) {
-        if (productExists(product.getName(), product.getCategoryId())) {
+        if (productExist(product.getName(), product.getCategoryId())) {
             throw new RuntimeException("A product with the same name and category already exists.");
         }
         // Establish a connection to the database
@@ -171,21 +170,6 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao {
     }
 
 
-    private boolean productExists(String name, int categoryId) {
-        String sql = "SELECT COUNT(*) FROM products WHERE name = ? AND category_id = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, name);
-            stmt.setInt(2, categoryId);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error checking product existence.", e);
-        }
-        return false;
-    }
 
     /**
      * Updates an existing product in the database.
@@ -243,6 +227,23 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao {
         catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean productExist(String name, int categoryId) {
+        String sql = "SELECT COUNT(*) FROM products WHERE name = ? AND category_id = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            stmt.setInt(2, categoryId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error checking product existence.", e);
+        }
+        return false;
     }
 
     /**

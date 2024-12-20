@@ -57,4 +57,8 @@ public interface CategoryDao {
      * @param categoryId The ID of the category to delete.
      */
     void delete(int categoryId);
+
+    boolean categoryExist(String name);
+
+
 }
