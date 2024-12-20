@@ -1,11 +1,10 @@
 <img width="1000" alt="one-place-logo" src="https://github.com/user-attachments/assets/e5dd1d59-62d3-4feb-b2ac-cf8c0410ab97" height="300"/>
 
-A  backend API built using Spring Boot and Java and serves as the foundation for the e-commerce website,
+A backend API built using Spring Boot and Java and serves as the foundation for the e-commerce website,
 offering a user-friendly platform for online shopping.
 
 # Features
-- User Authentication: 
-Register, login, and authenticate using JWT-based security.
+- User Authentication: Register, login, and authenticate using JWT-based security.
 - Product Management: Manage products, categories, and product filtering.
 - Order Management: Create, view, update, and manage customer orders 
 - Shopping Cart: Add, update, or remove products from the shopping cart.
@@ -15,8 +14,8 @@ Register, login, and authenticate using JWT-based security.
 - Java 
 - Spring Boot 
 - Spring Security (for JWT-based authentication)
-- MySQL (database)
-JUnit & JSON (for unit testing)
+- MySQLWorkbench (database)
+- JSON (for testing)
 
 # Requirements
 - Java 11+ (JDK 11 or higher)
@@ -37,7 +36,7 @@ spring.datasource.password= <yourpassword>
 
 5. Open PostMan. API will be accessible at http://localhost:8080
 
-6. Log in - /api/login and generate bearer token for authentication { "username":"admin", "password":"password" } 
+6. Log in - /api/login & generate bearer token for authentication {"username":"admin", "password":"password"} 
    
 
 # API Endpoints
@@ -46,7 +45,7 @@ Here is a list of the key API endpoints:
 Authentication
 
 - POST /api/register - Register a new user 
-- POST /api/login - Log in and get a JWT token
+- POST /api/login - Log in & get a JWT token
 
 Products
 
@@ -82,6 +81,7 @@ Orders
 - GET /api/orders - Get all orders for the logged in user 
 
 # Author 
+- Pluralsight
 - Tosh
 
 # Acknowledgement 
